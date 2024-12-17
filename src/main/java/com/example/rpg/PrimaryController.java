@@ -1,10 +1,16 @@
 package com.example.rpg;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -20,11 +26,14 @@ public class PrimaryController {
 
     private String grass = getClass().getResource("res/grass.png").toString();
     private String rock = getClass().getResource("res/rock.png").toString();
-    private String guy = getClass().getResource("res/guy.png").toString();
+    private String guy = getClass().getResource("res/npc/guy0.png").toString();
 
     private Image grassImg = new Image(grass);
     private Image guyImg = new Image(guy);
     private Image rockImg = new Image(rock);
+
+    private ArrayList<Npc> npcList = new ArrayList<Npc>();
+    private ArrayList<String> names = new ArrayList<String>();
 
 
     public void initialize() {
@@ -45,20 +54,40 @@ public class PrimaryController {
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0},
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0},
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0}
+                
         };
+        File file = new File("");
+        try {
+            file = new File(getClass().getResource("names.txt").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Scanner scan = new Scanner(file);
+            while(scan.hasNextLine()) {
+                names.add(scan.nextLine());
+            }
+            scan.close();
+        } catch (Exception e) {
+            System.err.println(e);
+        }
     
         gridPane.setFocusTraversable(true);
         gridPane.requestFocus();
 
         Timer t = new Timer();
-        Npc john = new Npc(3, 3, "John", map[0].length, map.length);
-        drawNpc(john);
+        spawnNpc(2, 2);
+        spawnNpc(2, 2);
+        spawnNpc(2, 2);
         t.schedule(new TimerTask() {
             @Override
             public void run() {
-                map[john.getxPos()][john.getyPos()] = 0;
-                john.move();
-                drawNpc(john);
+                for (Npc guy : npcList) {
+                    map[guy.getyPos()][guy.getxPos()] = 0;
+                    guy.move();
+                    drawNpc(guy); 
+                }
             }
         }, 0, 1000);
     
@@ -74,6 +103,7 @@ public class PrimaryController {
                     } else if (event.getCode() == KeyCode.RIGHT) {
                         x = Math.min(map[0].length - 1, x + 1);
                     }
+                    System.out.println("(" + x + ", " + y + ")");
                     renderMap();
                 });
             }
@@ -81,17 +111,25 @@ public class PrimaryController {
     
         renderMap();
     }
-    
+
+    private void spawnNpc(int x, int y) {
+        Random rand = new Random();
+        if (!names.isEmpty()) {
+            npcList.add(new Npc(x, y, names.get(rand.nextInt(names.size())), map));
+            drawNpc(npcList.get(npcList.size() - 1));
+        } else {
+            System.err.println("Error: Names list is empty. Cannot spawn NPC.");
+        }
+    }
 
     private void drawNpc(Npc guy) {
-        map[guy.getxPos()][guy.getyPos()] = 2;
+        map[guy.getyPos()][guy.getxPos()] = 2;
         renderMap();
     }
     
     private void renderMap() {
-        // Ensure everything is done on the JavaFX Application Thread
         Platform.runLater(() -> {
-            gridPane.getChildren().clear();  // Always clear before updating
+            gridPane.getChildren().clear();
     
             for (int row = 0; row < 10; row++) {
                 for (int col = 0; col < 10; col++) {
@@ -117,6 +155,16 @@ public class PrimaryController {
                     imageView.setFitWidth(50);
                     imageView.setFitHeight(50);
                     imageView.setPreserveRatio(true);
+                    if (map[mapRow][mapCol] == 2) {
+                        Tooltip t = new Tooltip("Test");
+                        for (Npc guy : npcList) {
+                            if (guy.getxPos() == mapCol && guy.getyPos() == mapRow) {
+                                t = new Tooltip(guy.getName());
+                            }
+                        }
+                        t.setShowDelay(javafx.util.Duration.ZERO);
+                        Tooltip.install(imageView, t);
+                    }
     
                     gridPane.add(imageView, col, row);
                 }
