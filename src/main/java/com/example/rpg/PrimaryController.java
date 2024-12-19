@@ -32,12 +32,15 @@ public class PrimaryController {
     private Image treeImage = new Image(tree);
 
     private ArrayList<Npc> npcList = new ArrayList<>();
+    private ArrayList<mob> mobList = new ArrayList<>();
     private ArrayList<String> names = new ArrayList<>();
 
     public void initialize() {
         int mapWidth = 500;
         int mapHeight = 500;
+
         map = generateMap(mapWidth, mapHeight);
+
 
         File file = new File("");
         try {
@@ -63,6 +66,11 @@ public class PrimaryController {
 
         spawnNpc(1, 1);
 
+        // Random r = new Random();
+        // for (int index = 0; index < 10000; index++) {
+        //     spawnMob(r.nextInt(mapWidth), r.nextInt(mapHeight));
+        // }
+
         t.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -71,6 +79,12 @@ public class PrimaryController {
                     guy.move();
                     drawNpc(guy);
                 }
+                for (mob guy : mobList) {
+                    map[guy.getyPos()][guy.getxPos()] = 0;
+                    guy.move();
+                    drawMob(guy);
+                }
+                renderMap();
             }
         }, 0, 500);
 
@@ -106,7 +120,7 @@ public class PrimaryController {
                 if (value < -0.2) {
                     generatedMap[y][x] = 0; // Stone (1)
                 } else if (value < 0.2) {
-                    if (random.nextDouble() < 0.1) {
+                    if (random.nextDouble() < 0.7) {
                         generatedMap[y][x] = 3;
                     } else {
                         generatedMap[y][x] = 0;
@@ -134,7 +148,20 @@ public class PrimaryController {
 
     private void drawNpc(Npc guy) {
         map[guy.getyPos()][guy.getxPos()] = 2;
-        renderMap();
+    }
+
+    private void spawnMob(int x, int y) {
+        Random rand = new Random();
+        if (!names.isEmpty()) {
+            mobList.add(new mob(y, x, names.get(rand.nextInt(names.size())), "cow", map));
+            drawMob(mobList.get(mobList.size() - 1));
+        } else {
+            System.err.println("Error: Names list is empty. Cannot spawn mob.");
+        }
+    }
+
+    private void drawMob(mob guy) {
+        map[guy.getyPos()][guy.getxPos()] = 4;
     }
 
     private void renderMap() {
@@ -163,8 +190,13 @@ public class PrimaryController {
                         }
                     } else if (map[mapRow][mapCol] == 3) {
                         image = treeImage;
+                    } else if (map[mapRow][mapCol] == 4) {
+                        for (mob guy : mobList) {
+                            if (guy.getxPos() == mapCol && guy.getyPos() == mapRow) {
+                                image = guy.getImage();
+                            }
+                        }
                     }
-
                     ImageView imageView = new ImageView(image);
                     imageView.setFitWidth(50);
                     imageView.setFitHeight(50);
@@ -187,6 +219,7 @@ public class PrimaryController {
                         // spawnNpc(clickedRow, clickedCol);
                         map[clickedRow][clickedCol] = 1;
                         System.out.println("Stone placed at: " + clickedRow + ", " + clickedCol);
+                        renderMap();
                     });
 
                     gridPane.add(imageView, col, row);

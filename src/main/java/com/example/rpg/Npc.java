@@ -14,6 +14,7 @@ public class Npc {
     private String name;
     private Image img;
     private String task;
+    List<int[]> path;
 
     public Npc(int xpos, int ypos, String name, int[][] map) {
         this.xpos = xpos;
@@ -33,37 +34,56 @@ public class Npc {
             Random rand = new Random();
             int temp = rand.nextInt(4);
             if (temp == 0) {
-                if (xpos + 1 < maxWidth && map[ypos][xpos + 1] == 0) xpos++;
+                if (xpos + 1 < maxWidth && map[ypos][xpos + 1] == 0)
+                    xpos++;
             } else if (temp == 1) {
-                if (xpos - 1 >= 0 && map[ypos][xpos - 1] == 0) xpos--;
+                if (xpos - 1 >= 0 && map[ypos][xpos - 1] == 0)
+                    xpos--;
             } else if (temp == 2) {
-                if (ypos + 1 < maxHeight && map[ypos + 1][xpos] == 0) ypos++;
+                if (ypos + 1 < maxHeight && map[ypos + 1][xpos] == 0)
+                    ypos++;
             } else if (temp == 3) {
-                if (ypos - 1 >= 0 && map[ypos - 1][xpos] == 0) ypos--;
+                if (ypos - 1 >= 0 && map[ypos - 1][xpos] == 0)
+                    ypos--;
             }
         } else if (this.task.equals("stone")) {
             int[] coords = findStone();
             if (coords != null) {
                 System.out.println("Stone found at: " + coords[1] + ", " + coords[0]);
+
+                for (int y = 0; y < maxHeight, ++)
+                    for (int x = 0; x < maxWidthx++) {
             }
         }
     }
+    
 
     private int[] findStone() {
         for (int y = 0; y < maxHeight; y++) {
             for (int x = 0; x < maxWidth; x++) {
                 if (map[y][x] == 1) {
-                    return new int[]{x, y};
+                    return new int[] { x, y };
                 }
             }
         }
         return null;
     }
 
-    public int getxPos() { return xpos; }
-    public int getyPos() { return ypos; }
-    public String getName() { return name; }
-    public Image getImage() { return img; }
+    public int getxPos() {
+        return xpos;
+    }
+
+    public int getyPos() {
+        return ypos;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Image getImage() {
+        return img;
+    }
 }
 
 class Node {
@@ -85,5 +105,19 @@ class Node {
     public Node(int x, int y, int gCost, int hCost, Node parent) {
         this(x, y, gCost, hCost);
         this.parent = parent;
+    }
+
+}
+
+class Cell {
+    int parent_i, parent_j;
+    double f, g, h;
+
+    Cell() {
+        this.parent_i = 0;
+        this.parent_j = 0;
+        this.f = 0;
+        this.g = 0;
+        this.h = 0;
     }
 }
