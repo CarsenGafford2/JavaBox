@@ -14,8 +14,9 @@ public class Npc {
     private String name;
     private Image img;
     private String task;
-    List<int[]> path;
-
+    private boolean[][] tempMap;
+    private boolean completed = true;
+    List<Point> path;
     public Npc(int xpos, int ypos, String name, int[][] map) {
         this.xpos = xpos;
         this.ypos = ypos;
@@ -24,6 +25,7 @@ public class Npc {
         this.maxWidth = map[0].length;
         this.map = map;
         this.task = "stone";
+        this.tempMap = new boolean[maxHeight][maxWidth];
 
         Random rand = new Random();
         this.img = new Image(getClass().getResource("res/npc/guy" + rand.nextInt(21) + ".png").toString());
@@ -49,10 +51,36 @@ public class Npc {
         } else if (this.task.equals("stone")) {
             int[] coords = findStone();
             if (coords != null) {
-                System.out.println("Stone found at: " + coords[1] + ", " + coords[0]);
+                if (completed) {
+                    System.out.println("Stone found at: " + coords[1] + ", " + coords[0]);
 
-                for (int y = 0; y < maxHeight, ++)
-                    for (int x = 0; x < maxWidthx++) {
+                    for (int y = 0; y < maxHeight; y++)
+                        for (int x = 0; x < maxWidth; x++) {
+                            if (map[x][y] == 0) {
+                                tempMap[x][y] = true;
+                            } else {
+                                tempMap[x][y] = false;
+                            }
+                        }
+                    Grid grid = new Grid(maxWidth, maxHeight, tempMap);
+                    Point start = new Point(xpos, ypos);
+                    Point target = new Point(coords[0], coords[1]);
+                    path = PathFinding.findPath(grid, start, target, false);
+                    if (path != null && !path.isEmpty()) {
+                        for (Point point : path) System.out.println(point);
+                        completed = false;
+                    } else {
+                        System.out.println("No valid path found to the stone.");
+                    }
+                } else {
+                    if (!path.isEmpty()) {
+                        this.xpos = path.get(0).x;
+                        this.ypos = path.get(0).y;
+                        path.remove(0);
+                    } else {
+                        completed = true;
+                    }
+                }
             }
         }
     }
