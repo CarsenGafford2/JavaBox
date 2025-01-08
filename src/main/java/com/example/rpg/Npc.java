@@ -16,6 +16,8 @@ public class Npc {
     private String task;
     private boolean[][] tempMap;
     private boolean completed = true;
+    private int stone;
+
     List<Point> path;
     public Npc(int xpos, int ypos, String name, int[][] map) {
         this.xpos = xpos;
@@ -48,6 +50,7 @@ public class Npc {
                 if (ypos - 1 >= 0 && map[ypos - 1][xpos] == 0)
                     ypos--;
             }
+            this.task = "stone";
         } else if (this.task.equals("stone")) {
             int[] coords = findStone();
             if (coords != null) {
@@ -62,16 +65,16 @@ public class Npc {
                                 tempMap[x][y] = false;
                             }
                         }
-                    Grid grid = new Grid(maxWidth, maxHeight, tempMap);
+                    Grid grid = new Grid(maxHeight, maxWidth, tempMap);
                     Point start = new Point(xpos, ypos);
                     Point target = new Point(coords[0], coords[1]);
                     path = PathFinding.findPath(grid, start, target, false);
                     if (path != null && !path.isEmpty()) {
-                        for (Point point : path) System.out.println(point);
                         completed = false;
                     } else {
-                        System.out.println("No valid path found to the stone.");
-                    }
+                        System.out.println("No path found");
+                        this.task = "wander";
+                    }   
                 } else {
                     if (!path.isEmpty()) {
                         this.xpos = path.get(0).x;
@@ -79,23 +82,31 @@ public class Npc {
                         path.remove(0);
                     } else {
                         completed = true;
+                        this.path = null;
+                        stone++;
+                        System.out.println("Stone collected: " + stone);
                     }
                 }
             }
         }
     }
-    
+        private int[] findStone() {
+            int[] closestStone = null;
+            double minDistance = Double.MAX_VALUE;
 
-    private int[] findStone() {
-        for (int y = 0; y < maxHeight; y++) {
+            for (int y = 0; y < maxHeight; y++) {
             for (int x = 0; x < maxWidth; x++) {
                 if (map[y][x] == 1) {
-                    return new int[] { x, y };
+                double distance = Math.sqrt(Math.pow(x - xpos, 2) + Math.pow(y - ypos, 2));
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestStone = new int[] { x, y };
+                }
                 }
             }
+            }
+            return closestStone;
         }
-        return null;
-    }
 
     public int getxPos() {
         return xpos;

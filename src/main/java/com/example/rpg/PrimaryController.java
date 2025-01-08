@@ -34,6 +34,7 @@ public class PrimaryController {
     private ArrayList<Npc> npcList = new ArrayList<>();
     private ArrayList<mob> mobList = new ArrayList<>();
     private ArrayList<String> names = new ArrayList<>();
+    private ArrayList<String> cowNames = new ArrayList<>();
 
     public void initialize() {
         int mapWidth = 500;
@@ -58,18 +59,31 @@ public class PrimaryController {
         } catch (Exception e) {
             System.err.println(e);
         }
+        try {
+            file = new File(getClass().getResource("cowNames.txt").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
 
+        try {
+            Scanner scan = new Scanner(file);
+            while (scan.hasNextLine()) {
+                cowNames.add(scan.nextLine());
+            }
+            scan.close();
+        } catch (Exception e) {
+            System.err.println(e);
+        }
         gridPane.setFocusTraversable(true);
         gridPane.requestFocus();
 
         Timer t = new Timer();
 
-        spawnNpc(1, 1);
 
-        // Random r = new Random();
-        // for (int index = 0; index < 10000; index++) {
-        //     spawnMob(r.nextInt(mapWidth), r.nextInt(mapHeight));
-        // }
+        Random r = new Random();
+        for (int index = 0; index < 10000; index++) {
+            spawnMob(r.nextInt(mapWidth), r.nextInt(mapHeight));
+        }
 
         t.schedule(new TimerTask() {
             @Override
@@ -106,34 +120,34 @@ public class PrimaryController {
         });
 
         renderMap();
-    }
+        }
 
-    private int[][] generateMap(int width, int height) {
+        private int[][] generateMap(int width, int height) {
         int[][] generatedMap = new int[height][width];
         Random random = new Random();
-    
+        
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                long seed = 781029377;
-                double value = OpenSimplex2S.noise2(seed, x, y);
-    
-                if (value < -0.2) {
-                    generatedMap[y][x] = 0; // Stone (1)
-                } else if (value < 0.2) {
-                    if (random.nextDouble() < 0.7) {
-                        generatedMap[y][x] = 3;
-                    } else {
-                        generatedMap[y][x] = 0;
-                    }
+            long seed = 781029377;
+            double value = OpenSimplex2S.noise2(seed, x * 0.1, y * 0.1); // Adjust scale for larger groups
+        
+            if (value < -0.2) {
+                generatedMap[y][x] = 3; // Tree (3)
+            } else if (value < 0.2) {
+                if (random.nextDouble() < 0.7) {
+                generatedMap[y][x] = 1; // Stone (1)
                 } else {
-                    generatedMap[y][x] = 0;
+                generatedMap[y][x] = 0; // Grass (0)
                 }
+            } else {
+                generatedMap[y][x] = 0; // Grass (0)
+            }
             }
         }
         return generatedMap;
-    }    
+        }    
 
-    private void spawnNpc(int x, int y) {
+        private void spawnNpc(int x, int y) {
         Random rand = new Random();
         if (!names.isEmpty()) {
             npcList.add(new Npc(y, x, names.get(rand.nextInt(names.size())), map));
@@ -153,7 +167,7 @@ public class PrimaryController {
     private void spawnMob(int x, int y) {
         Random rand = new Random();
         if (!names.isEmpty()) {
-            mobList.add(new mob(y, x, names.get(rand.nextInt(names.size())), "cow", map));
+            mobList.add(new mob(y, x, cowNames.get(rand.nextInt(cowNames.size())), "cow", map));
             drawMob(mobList.get(mobList.size() - 1));
         } else {
             System.err.println("Error: Names list is empty. Cannot spawn mob.");
@@ -212,13 +226,21 @@ public class PrimaryController {
                         t.setShowDelay(javafx.util.Duration.ZERO);
                         Tooltip.install(imageView, t);
                     }
+                    if (map[mapRow][mapCol] == 4) {
+                        Tooltip t = new Tooltip("Error");
+                        for (mob guy : mobList) {
+                            if (guy.getxPos() == mapCol && guy.getyPos() == mapRow) {
+                                t = new Tooltip(guy.getName());
+                            }
+                        }
+                        t.setShowDelay(javafx.util.Duration.ZERO);
+                        Tooltip.install(imageView, t);
+                    }
 
                     int clickedRow = mapRow;
                     int clickedCol = mapCol;
                     imageView.setOnMouseClicked(event -> {
-                        // spawnNpc(clickedRow, clickedCol);
-                        map[clickedRow][clickedCol] = 1;
-                        System.out.println("Stone placed at: " + clickedRow + ", " + clickedCol);
+                        spawnNpc(clickedRow, clickedCol);
                         renderMap();
                     });
 
