@@ -22,6 +22,7 @@ public class PrimaryController {
     private int[][] map;
     private int x = 0;
     private int y = 0;
+    private int percent = 0;
 
     private String grass = getClass().getResource("res/grass.png").toString();
     private String rock = getClass().getResource("res/rock.png").toString();
@@ -35,8 +36,10 @@ public class PrimaryController {
     private ArrayList<mob> mobList = new ArrayList<>();
     private ArrayList<String> names = new ArrayList<>();
     private ArrayList<String> cowNames = new ArrayList<>();
+    private ArrayList<String> sheepNames = new ArrayList<>();
 
     public void initialize() {
+        System.out.print("\033[H\033[2J");  
         int mapWidth = 500;
         int mapHeight = 500;
 
@@ -45,7 +48,7 @@ public class PrimaryController {
 
         File file = new File("");
         try {
-            file = new File(getClass().getResource("names.txt").toURI());
+            file = new File(getClass().getResource("names/names.txt").toURI());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -60,15 +63,31 @@ public class PrimaryController {
             System.err.println(e);
         }
         try {
-            file = new File(getClass().getResource("cowNames.txt").toURI());
+            file = new File(getClass().getResource("names/cowNames.txt").toURI());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-
+        
         try {
             Scanner scan = new Scanner(file);
             while (scan.hasNextLine()) {
                 cowNames.add(scan.nextLine());
+            }
+            scan.close();
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+
+        try {
+            file = new File(getClass().getResource("names/sheepNames.txt").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        
+        try {
+            Scanner scan = new Scanner(file);
+            while (scan.hasNextLine()) {
+                sheepNames.add(scan.nextLine());
             }
             scan.close();
         } catch (Exception e) {
@@ -81,8 +100,16 @@ public class PrimaryController {
 
 
         Random r = new Random();
-        for (int index = 0; index < 10000; index++) {
-            spawnMob(r.nextInt(mapWidth), r.nextInt(mapHeight));
+        System.out.print("\033[H\033[2J");
+        int i = 10000;
+        for (int index = 0; index < i; index++) {
+            int x = r.nextInt(mapWidth);
+            int y = r.nextInt(mapHeight);
+            if (map[x][y] == 0) {
+                spawnMob(x, y);
+            }
+            System.out.print("\rSpawning Mobs... " + percent + "%");
+            percent = (index * 100) / i;
         }
 
         t.schedule(new TimerTask() {
@@ -127,6 +154,8 @@ public class PrimaryController {
         Random random = new Random();
         
         for (int y = 0; y < height; y++) {
+            System.out.print("\rGenerating map... " + percent + "%");
+            percent = (y * 100) / height;
             for (int x = 0; x < width; x++) {
             long seed = 781029377;
             double value = OpenSimplex2S.noise2(seed, x * 0.1, y * 0.1); // Adjust scale for larger groups
@@ -166,11 +195,21 @@ public class PrimaryController {
 
     private void spawnMob(int x, int y) {
         Random rand = new Random();
-        if (!names.isEmpty()) {
-            mobList.add(new mob(y, x, cowNames.get(rand.nextInt(cowNames.size())), "cow", map));
-            drawMob(mobList.get(mobList.size() - 1));
-        } else {
-            System.err.println("Error: Names list is empty. Cannot spawn mob.");
+        int temp = rand.nextInt(2);
+        if (temp == 0) {
+            if (!cowNames.isEmpty()) {
+                mobList.add(new mob(y, x, cowNames.get(rand.nextInt(cowNames.size())), "cow", map));
+                drawMob(mobList.get(mobList.size() - 1));
+            } else {
+                System.err.println("Error: Names list is empty. Cannot spawn mob.");
+            }
+        } else if (temp == 1) {
+            if (!sheepNames.isEmpty()) {
+                mobList.add(new mob(y, x, sheepNames.get(rand.nextInt(sheepNames.size())), "sheep", map));
+                drawMob(mobList.get(mobList.size() - 1));
+            } else {
+                System.err.println("Error: Names list is empty. Cannot spawn mob.");
+            }
         }
     }
 
