@@ -17,6 +17,7 @@ public class Npc {
     private boolean[][] tempMap;
     private boolean completed = true;
     private int stone;
+    // private int wood;
     private Image rightImage;
     private Image leftImage;
     private int varient = 0;
@@ -29,7 +30,7 @@ public class Npc {
         this.maxHeight = map.length;
         this.maxWidth = map[0].length;
         this.map = map;
-        this.task = "stone";
+        this.task = "wander";
         this.tempMap = new boolean[maxHeight][maxWidth];
 
         Random rand = new Random();
@@ -44,18 +45,18 @@ public class Npc {
             Random rand = new Random();
             int temp = rand.nextInt(4);
             if (temp == 0) {
-                if (xpos + 1 < maxWidth && map[ypos][xpos + 1] == 0)
+                if (xpos + 1 < maxWidth && map[ypos][xpos + 1] == 0 || xpos + 1 < maxWidth && map[ypos][xpos + 1] == 6)
                     xpos++;
                     img = rightImage;
             } else if (temp == 1) {
-                if (xpos - 1 >= 0 && map[ypos][xpos - 1] == 0)
+                if (xpos - 1 >= 0 && map[ypos][xpos - 1] == 0 || xpos - 1 >= 0 && map[ypos][xpos - 1] == 6)
                     xpos--;
                     img = leftImage;
             } else if (temp == 2) {
-                if (ypos + 1 < maxHeight && map[ypos + 1][xpos] == 0)
+                if (ypos + 1 < maxHeight && map[ypos + 1][xpos] == 0 || ypos + 1 < maxHeight && map[ypos + 1][xpos] == 6)
                     ypos++;
             } else if (temp == 3) {
-                if (ypos - 1 >= 0 && map[ypos - 1][xpos] == 0)
+                if (ypos - 1 >= 0 && map[ypos - 1][xpos] == 0 || ypos - 1 >= 0 && map[ypos - 1][xpos] == 6)
                     ypos--;
             }
             this.task = "stone";
@@ -128,41 +129,5 @@ public class Npc {
 
     public Image getImage() {
         return img;
-    }
-}
-
-class Node {
-    int x, y;
-    int gCost;
-    int hCost;
-    int fCost;
-    Node parent;
-
-    public Node(int x, int y, int gCost, int hCost) {
-        this.x = x;
-        this.y = y;
-        this.gCost = gCost;
-        this.hCost = hCost;
-        this.fCost = gCost + hCost;
-        this.parent = null;
-    }
-
-    public Node(int x, int y, int gCost, int hCost, Node parent) {
-        this(x, y, gCost, hCost);
-        this.parent = parent;
-    }
-
-}
-
-class Cell {
-    int parent_i, parent_j;
-    double f, g, h;
-
-    Cell() {
-        this.parent_i = 0;
-        this.parent_j = 0;
-        this.f = 0;
-        this.g = 0;
-        this.h = 0;
     }
 }

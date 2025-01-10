@@ -13,12 +13,12 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>13</version>
+            <version>17</version> <!-- Update to JavaFX 17 -->
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>13</version>
+            <version>17</version> <!-- Update to JavaFX 17 -->
         </dependency>
     </dependencies>
     <build>
@@ -34,14 +34,12 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.6</version>
+                <version>0.0.8</version>
                 <executions>
                     <execution>
-                        <!-- Default configuration for running -->
-                        <!-- Usage: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.example.rpg.App</mainClass>
+                            <mainClass>com.example.rpg.App</mainClass> <!-- Ensure this points to your main class -->
                         </configuration>
                     </execution>
                 </executions>
