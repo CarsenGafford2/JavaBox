@@ -17,6 +17,9 @@ public class Npc {
     private boolean[][] tempMap;
     private boolean completed = true;
     private int stone;
+    private Image rightImage;
+    private Image leftImage;
+    private int varient = 0;
 
     List<Point> path;
     public Npc(int xpos, int ypos, String name, int[][] map) {
@@ -30,7 +33,10 @@ public class Npc {
         this.tempMap = new boolean[maxHeight][maxWidth];
 
         Random rand = new Random();
-        this.img = new Image(getClass().getResource("res/npc/guy" + rand.nextInt(21) + ".png").toString());
+        this.varient = rand.nextInt(21);
+        this.rightImage = new Image(getClass().getResource("res/npc/guy" + this.varient + ".png").toString());
+        this.leftImage = new Image(getClass().getResource("res/npc/guy" + this.varient + "r" + ".png").toString());
+        this.img = rightImage;
     }
 
     public void move() {
@@ -40,9 +46,11 @@ public class Npc {
             if (temp == 0) {
                 if (xpos + 1 < maxWidth && map[ypos][xpos + 1] == 0)
                     xpos++;
+                    img = rightImage;
             } else if (temp == 1) {
                 if (xpos - 1 >= 0 && map[ypos][xpos - 1] == 0)
                     xpos--;
+                    img = leftImage;
             } else if (temp == 2) {
                 if (ypos + 1 < maxHeight && map[ypos + 1][xpos] == 0)
                     ypos++;
@@ -55,7 +63,6 @@ public class Npc {
             int[] coords = findStone();
             if (coords != null) {
                 if (completed) {
-                    System.out.println("Stone found at: " + coords[1] + ", " + coords[0]);
 
                     for (int y = 0; y < maxHeight; y++)
                         for (int x = 0; x < maxWidth; x++) {
@@ -72,7 +79,6 @@ public class Npc {
                     if (path != null && !path.isEmpty()) {
                         completed = false;
                     } else {
-                        System.out.println("No path found");
                         this.task = "wander";
                     }   
                 } else {

@@ -115,12 +115,12 @@ public class PrimaryController {
         t.schedule(new TimerTask() {
             @Override
             public void run() {
-                for (Npc guy : npcList) {
+                for (Npc guy : new ArrayList<>(npcList)) {
                     map[guy.getyPos()][guy.getxPos()] = 0;
                     guy.move();
                     drawNpc(guy);
                 }
-                for (mob guy : mobList) {
+                for (mob guy : new ArrayList<>(mobList)) {
                     map[guy.getyPos()][guy.getxPos()] = 0;
                     guy.move();
                     drawMob(guy);
@@ -279,8 +279,10 @@ public class PrimaryController {
                     int clickedRow = mapRow;
                     int clickedCol = mapCol;
                     imageView.setOnMouseClicked(event -> {
-                        spawnNpc(clickedRow, clickedCol);
-                        renderMap();
+                        if (map[clickedRow][clickedCol] == 0) {
+                            spawnNpc(clickedRow, clickedCol);
+                            renderMap();
+                        }
                     });
 
                     gridPane.add(imageView, col, row);
