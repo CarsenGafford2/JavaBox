@@ -49,6 +49,7 @@ public class PrimaryController {
     private ArrayList<String> names = new ArrayList<>();
     private ArrayList<String> cowNames = new ArrayList<>();
     private ArrayList<String> sheepNames = new ArrayList<>();
+    private ArrayList<String> chickenNames = new ArrayList<>();
 
     public void initialize() {
         System.out.print("\033[H\033[2J");  
@@ -108,6 +109,22 @@ public class PrimaryController {
             Scanner scan = new Scanner(file);
             while (scan.hasNextLine()) {
                 sheepNames.add(scan.nextLine());
+            }
+            scan.close();
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+
+        try {
+            file = new File(getClass().getResource("names/chickenNames.txt").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        
+        try {
+            Scanner scan = new Scanner(file);
+            while (scan.hasNextLine()) {
+                chickenNames.add(scan.nextLine());
             }
             scan.close();
         } catch (Exception e) {
@@ -271,7 +288,7 @@ public class PrimaryController {
 
     private void spawnMob(int x, int y) {
         Random rand = new Random();
-        int temp = rand.nextInt(2);
+        int temp = rand.nextInt(3);
         if (temp == 0) {
             if (!cowNames.isEmpty()) {
                 mobList.add(new mob(y, x, cowNames.get(rand.nextInt(cowNames.size())), "cow", map));
@@ -282,6 +299,17 @@ public class PrimaryController {
         } else if (temp == 1) {
             if (!sheepNames.isEmpty()) {
                 mobList.add(new mob(y, x, sheepNames.get(rand.nextInt(sheepNames.size())), "sheep", map));
+                drawMob(mobList.get(mobList.size() - 1));
+            } else {
+                System.err.println("Error: Names list is empty. Cannot spawn mob.");
+            }
+        } else if (temp == 2) {
+            if (!chickenNames.isEmpty()) {
+                if (rand.nextInt(100) == 0) {
+                    mobList.add(new mob(y, x, "Big Bird", "jumbo", map));
+                } else {
+                    mobList.add(new mob(y, x, chickenNames.get(rand.nextInt(chickenNames.size())), "chicken", map));
+                }
                 drawMob(mobList.get(mobList.size() - 1));
             } else {
                 System.err.println("Error: Names list is empty. Cannot spawn mob.");
