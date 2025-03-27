@@ -18,12 +18,18 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 public class PrimaryController {
     @FXML
     private GridPane gridPane;
+
+    @FXML
+    private TextFlow textFlow;
 
     private int[][] map;
     private int[][] cleanMap;
@@ -37,6 +43,7 @@ public class PrimaryController {
     private String tree = getClass().getResource("res/textures/tree.png").toString();
     private String water = getClass().getResource("res/textures/water.png").toString();
     private String sand = getClass().getResource("res/textures/sand.png").toString();
+    private String brick = getClass().getResource("res/textures/brick.png").toString();
 
 
     private Image grassImg = new Image(grass);
@@ -44,6 +51,7 @@ public class PrimaryController {
     private Image treeImage = new Image(tree);
     private Image waterImage = new Image(water);
     private Image sandImage = new Image(sand);
+    private Image brickImage = new Image(brick);
 
     private ArrayList<Npc> npcList = new ArrayList<>();
     private ArrayList<mob> mobList = new ArrayList<>();
@@ -180,18 +188,20 @@ public class PrimaryController {
                         x = Math.max(0, x - 1);
                     } else if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.D) {
                         x = Math.min(map[0].length - 10, x + 1);
-                    } else if (event.getCode() == KeyCode.DIGIT0) {
-                        numberKeypressed = 0;
                     } else if (event.getCode() == KeyCode.DIGIT1) {
-                        numberKeypressed = 1;
+                        numberKeypressed = 0;
                     } else if (event.getCode() == KeyCode.DIGIT2) {
-                        numberKeypressed = 2;
+                        numberKeypressed = 1;
                     } else if (event.getCode() == KeyCode.DIGIT3) {
-                        numberKeypressed = 3;
+                        numberKeypressed = 2;
                     } else if (event.getCode() == KeyCode.DIGIT4) {
-                        numberKeypressed = 4;
+                        numberKeypressed = 3;
                     } else if (event.getCode() == KeyCode.DIGIT5) {
+                        numberKeypressed = 4;
+                    } else if (event.getCode() == KeyCode.DIGIT6) {
                         numberKeypressed = 5;
+                    } else if (event.getCode() == KeyCode.DIGIT7) {
+                        numberKeypressed = 6;
                     }
                     renderMap();
                 });
@@ -199,6 +209,13 @@ public class PrimaryController {
         });
 
         renderMap();
+        log("Test");
+        }
+
+        private void log(String message) {
+            Platform.runLater(() -> {
+                textFlow.getChildren().add(new Text(message + "\n"));
+            });
         }
         
         private int[][] generateMap(int width, int height) {
@@ -370,6 +387,8 @@ public class PrimaryController {
                         image = waterImage;
                     } else if (map[mapRow][mapCol] == 6) { // Sand
                         image = sandImage;
+                    } else if (map[mapRow][mapCol] == 7) { // Brick
+                        image = brickImage;
                     }
                     ImageView imageView = new ImageView(image);
                     imageView.setFitWidth(50);
@@ -400,26 +419,27 @@ public class PrimaryController {
                     int clickedRow = mapRow;
                     int clickedCol = mapCol;
                     imageView.setOnMouseClicked(event -> {
-                        if (map[clickedRow][clickedCol] == 0) {
-                            if (numberKeypressed == 0) {
-                                spawnNpc(clickedRow, clickedCol);
-                                renderMap();
-                            } else if (numberKeypressed == 1) {
-                                spawnMob(clickedRow, clickedCol);
-                                renderMap();
-                            } else if (numberKeypressed == 2) {
-                                map[clickedRow][clickedCol] = 1;
-                                renderMap();
-                            } else if (numberKeypressed == 3) {
-                                map[clickedRow][clickedCol] = 3;
-                                renderMap();
-                            } else if (numberKeypressed == 4) {
-                                map[clickedRow][clickedCol] = 5;
-                                renderMap();
-                            } else if (numberKeypressed == 5) {
-                                map[clickedRow][clickedCol] = 6;
-                                renderMap();
-                            }
+                        if (numberKeypressed == 0) {
+                            spawnNpc(clickedRow, clickedCol);
+                            renderMap();
+                        } else if (numberKeypressed == 1) {
+                            spawnMob(clickedRow, clickedCol);
+                            renderMap();
+                        } else if (numberKeypressed == 2) {
+                            map[clickedRow][clickedCol] = 1;
+                            renderMap();
+                        } else if (numberKeypressed == 3) {
+                            map[clickedRow][clickedCol] = 3;
+                            renderMap();
+                        } else if (numberKeypressed == 4) {
+                            map[clickedRow][clickedCol] = 5;
+                            renderMap();
+                        } else if (numberKeypressed == 5) {
+                            map[clickedRow][clickedCol] = 6;
+                            renderMap();
+                        } else if (numberKeypressed == 6) {
+                            map[clickedRow][clickedCol] = 7;
+                            renderMap();
                         }
                     });
 
