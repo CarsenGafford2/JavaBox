@@ -30,6 +30,7 @@ public class PrimaryController {
     private int x = 0;
     private int y = 0;
     private int percent = 0;
+    private int numberKeypressed = 0;
 
     private String grass = getClass().getResource("res/textures/grass.png").toString();
     private String rock = getClass().getResource("res/textures/rock.png").toString();
@@ -179,6 +180,18 @@ public class PrimaryController {
                         x = Math.max(0, x - 1);
                     } else if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.D) {
                         x = Math.min(map[0].length - 10, x + 1);
+                    } else if (event.getCode() == KeyCode.DIGIT0) {
+                        numberKeypressed = 0;
+                    } else if (event.getCode() == KeyCode.DIGIT1) {
+                        numberKeypressed = 1;
+                    } else if (event.getCode() == KeyCode.DIGIT2) {
+                        numberKeypressed = 2;
+                    } else if (event.getCode() == KeyCode.DIGIT3) {
+                        numberKeypressed = 3;
+                    } else if (event.getCode() == KeyCode.DIGIT4) {
+                        numberKeypressed = 4;
+                    } else if (event.getCode() == KeyCode.DIGIT5) {
+                        numberKeypressed = 5;
                     }
                     renderMap();
                 });
@@ -305,7 +318,7 @@ public class PrimaryController {
             }
         } else if (temp == 2) {
             if (!chickenNames.isEmpty()) {
-                if (rand.nextInt(100) == 0) {
+                if (rand.nextInt(1000) == 0) {// 0.1% chance of BIG BIRD
                     mobList.add(new mob(y, x, "Big Bird", "jumbo", map));
                 } else {
                     mobList.add(new mob(y, x, chickenNames.get(rand.nextInt(chickenNames.size())), "chicken", map));
@@ -388,8 +401,25 @@ public class PrimaryController {
                     int clickedCol = mapCol;
                     imageView.setOnMouseClicked(event -> {
                         if (map[clickedRow][clickedCol] == 0) {
-                            spawnNpc(clickedRow, clickedCol);
-                            renderMap();
+                            if (numberKeypressed == 0) {
+                                spawnNpc(clickedRow, clickedCol);
+                                renderMap();
+                            } else if (numberKeypressed == 1) {
+                                spawnMob(clickedRow, clickedCol);
+                                renderMap();
+                            } else if (numberKeypressed == 2) {
+                                map[clickedRow][clickedCol] = 1;
+                                renderMap();
+                            } else if (numberKeypressed == 3) {
+                                map[clickedRow][clickedCol] = 3;
+                                renderMap();
+                            } else if (numberKeypressed == 4) {
+                                map[clickedRow][clickedCol] = 5;
+                                renderMap();
+                            } else if (numberKeypressed == 5) {
+                                map[clickedRow][clickedCol] = 6;
+                                renderMap();
+                            }
                         }
                     });
 
