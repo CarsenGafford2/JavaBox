@@ -39,6 +39,7 @@ public class PrimaryController {
     private String water = getClass().getResource("res/textures/water.png").toString();
     private String sand = getClass().getResource("res/textures/sand.png").toString();
     private String brick = getClass().getResource("res/textures/brick.png").toString();
+    private String wood = getClass().getResource("res/textures/wood.png").toString();
 
 
     private Image grassImg = new Image(grass);
@@ -47,6 +48,7 @@ public class PrimaryController {
     private Image waterImage = new Image(water);
     private Image sandImage = new Image(sand);
     private Image brickImage = new Image(brick);
+    private Image woodImage = new Image(wood);
 
     private ArrayList<Npc> npcList = new ArrayList<>();
     private ArrayList<mob> mobList = new ArrayList<>();
@@ -54,6 +56,8 @@ public class PrimaryController {
     private ArrayList<String> cowNames = new ArrayList<>();
     private ArrayList<String> sheepNames = new ArrayList<>();
     private ArrayList<String> chickenNames = new ArrayList<>();
+
+    // console.getInstance().log("test?");
 
     public void initialize() {
         System.out.print("\033[H\033[2J");  
@@ -161,7 +165,6 @@ public class PrimaryController {
                     map[guy.getyPos()][guy.getxPos()] = 0;
                     guy.move();
                     drawNpc(guy);
-                    console.getInstance().log("test?");
                 }
                 for (mob guy : new ArrayList<>(mobList)) {
                     // map[guy.getyPos()][guy.getxPos()] = cleanMap[guy.getyPos()][guy.getxPos()];
@@ -198,6 +201,8 @@ public class PrimaryController {
                         numberKeypressed = 5;
                     } else if (event.getCode() == KeyCode.DIGIT7) {
                         numberKeypressed = 6;
+                    } else if (event.getCode() == KeyCode.DIGIT8) {
+                        numberKeypressed = 7;
                     }
                     renderMap();
                 });
@@ -379,6 +384,8 @@ public class PrimaryController {
                         image = sandImage;
                     } else if (map[mapRow][mapCol] == 7) { // Brick
                         image = brickImage;
+                    } else if (map[mapRow][mapCol] == 8) { // Wood
+                        image = woodImage;
                     }
                     ImageView imageView = new ImageView(image);
                     imageView.setFitWidth(50);
@@ -411,9 +418,11 @@ public class PrimaryController {
                     imageView.setOnMouseClicked(event -> {
                         if (numberKeypressed == 0) {
                             spawnNpc(clickedRow, clickedCol);
+                            console.getInstance().log(npcList.get(npcList.size() - 1).getName() + " Spawned");
                             renderMap();
                         } else if (numberKeypressed == 1) {
                             spawnMob(clickedRow, clickedCol);
+                            console.getInstance().log("Mob Spawned: " + mobList.get(mobList.size() - 1).getName());
                             renderMap();
                         } else if (numberKeypressed == 2) {
                             map[clickedRow][clickedCol] = 1;
@@ -429,6 +438,9 @@ public class PrimaryController {
                             renderMap();
                         } else if (numberKeypressed == 6) {
                             map[clickedRow][clickedCol] = 7;
+                            renderMap();
+                        } else if (numberKeypressed == 7) {
+                            map[clickedRow][clickedCol] = 8;
                             renderMap();
                         }
                     });
