@@ -18,8 +18,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -27,9 +25,6 @@ import java.awt.image.BufferedImage;
 public class PrimaryController {
     @FXML
     private GridPane gridPane;
-
-    @FXML
-    private TextFlow textFlow;
 
     private int[][] map;
     private int[][] cleanMap;
@@ -166,6 +161,7 @@ public class PrimaryController {
                     map[guy.getyPos()][guy.getxPos()] = 0;
                     guy.move();
                     drawNpc(guy);
+                    console.getInstance().log("test?");
                 }
                 for (mob guy : new ArrayList<>(mobList)) {
                     // map[guy.getyPos()][guy.getxPos()] = cleanMap[guy.getyPos()][guy.getxPos()];
@@ -209,15 +205,9 @@ public class PrimaryController {
         });
 
         renderMap();
-        log("Test");
         }
 
-        private void log(String message) {
-            Platform.runLater(() -> {
-                textFlow.getChildren().add(new Text(message + "\n"));
-            });
-        }
-        
+
         private int[][] generateMap(int width, int height) {
             int[][] generatedMap = new int[height][width];
             long seed = 781029377;
