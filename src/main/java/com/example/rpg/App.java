@@ -14,7 +14,6 @@ import java.io.IOException;
 public class App extends Application {
 
     private static Scene primaryScene;
-    private static Scene consoleScene;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -24,13 +23,6 @@ public class App extends Application {
         primaryStage.setResizable(false);
         primaryStage.setTitle("Game");
         primaryStage.show();
-
-        Stage consoleStage = new Stage();
-        consoleScene = new Scene(loadFXML("console"), 400, 300);
-        consoleStage.setScene(consoleScene);
-        consoleStage.setResizable(false);
-        consoleStage.setTitle("Console Window");
-        consoleStage.show();
     }
 
     static void setRoot(String fxml) throws IOException {

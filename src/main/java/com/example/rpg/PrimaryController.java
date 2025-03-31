@@ -57,8 +57,6 @@ public class PrimaryController {
     private ArrayList<String> sheepNames = new ArrayList<>();
     private ArrayList<String> chickenNames = new ArrayList<>();
 
-    // console.getInstance().log("test?");
-
     public void initialize() {
         System.out.print("\033[H\033[2J");  
         int mapWidth = 500;
@@ -418,11 +416,11 @@ public class PrimaryController {
                     imageView.setOnMouseClicked(event -> {
                         if (numberKeypressed == 0) {
                             spawnNpc(clickedRow, clickedCol);
-                            console.getInstance().log(npcList.get(npcList.size() - 1).getName() + " Spawned");
+                            // console.getInstance().log(npcList.get(npcList.size() - 1).getName() + " Spawned");
                             renderMap();
                         } else if (numberKeypressed == 1) {
                             spawnMob(clickedRow, clickedCol);
-                            console.getInstance().log("Mob Spawned: " + mobList.get(mobList.size() - 1).getName());
+                            // console.getInstance().log("Mob Spawned: " + mobList.get(mobList.size() - 1).getName());
                             renderMap();
                         } else if (numberKeypressed == 2) {
                             map[clickedRow][clickedCol] = 1;

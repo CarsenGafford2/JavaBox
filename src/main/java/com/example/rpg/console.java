@@ -16,7 +16,7 @@ public class console extends AnchorPane {
     public console() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("console.fxml"));
         fxmlLoader.setRoot(this);
-        fxmlLoader.setController(this); // Explicitly set the controller
+        fxmlLoader.setController(this);
         try {
             fxmlLoader.load();
         } catch (IOException e) {

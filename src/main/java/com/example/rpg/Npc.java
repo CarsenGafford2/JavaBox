@@ -67,10 +67,10 @@ public class Npc {
 
                     for (int y = 0; y < maxHeight; y++)
                         for (int x = 0; x < maxWidth; x++) {
-                            if (map[x][y] == 0) {
-                                tempMap[x][y] = true;
+                            if (map[y][x] == 0) {
+                                tempMap[y][x] = true;
                             } else {
-                                tempMap[x][y] = false;
+                                tempMap[y][x] = false;
                             }
                         }
                     Grid grid = new Grid(maxHeight, maxWidth, tempMap);
@@ -83,7 +83,7 @@ public class Npc {
                         this.task = "wander";
                     }   
                 } else {
-                    if (!path.isEmpty()) {
+                    if (path != null && !path.isEmpty()) {
                         this.xpos = path.get(0).x;
                         this.ypos = path.get(0).y;
                         path.remove(0);
