@@ -33,17 +33,29 @@ public class PrimaryController {
     private int percent = 0;
     private int numberKeypressed = 0;
 
-    private String grass = getClass().getResource("res/textures/grass.png").toString();
-    private String rock = getClass().getResource("res/textures/rock.png").toString();
-    private String tree = getClass().getResource("res/textures/tree.png").toString();
-    private String water = getClass().getResource("res/textures/water.png").toString();
-    private String sand = getClass().getResource("res/textures/sand.png").toString();
-    private String brick = getClass().getResource("res/textures/brick.png").toString();
-    private String wood = getClass().getResource("res/textures/wood.png").toString();
-    private String bedTop = getClass().getResource("res/textures/bedTop.png").toString();
-    private String bedBottom = getClass().getResource("res/textures/bedBottom.png").toString();
-    private String nightstand = getClass().getResource("res/textures/nightstand.png").toString();
-    private String door = getClass().getResource("res/textures/door.png").toString();
+    private String grass = checkAndLoadTexture("mods/textures/grass.png", "res/textures/grass.png");
+    private String rock = checkAndLoadTexture("mods/textures/rock.png", "res/textures/rock.png");
+    private String tree = checkAndLoadTexture("mods/textures/tree.png", "res/textures/tree.png");
+    private String water = checkAndLoadTexture("mods/textures/water.png", "res/textures/water.png");
+    private String sand = checkAndLoadTexture("mods/textures/sand.png", "res/textures/sand.png");
+    private String brick = checkAndLoadTexture("mods/textures/brick.png", "res/textures/brick.png");
+    private String wood = checkAndLoadTexture("mods/textures/wood.png", "res/textures/wood.png");
+    private String bedTop = checkAndLoadTexture("mods/textures/bedTop.png", "res/textures/bedTop.png");
+    private String bedBottom = checkAndLoadTexture("mods/textures/bedBottom.png", "res/textures/bedBottom.png");
+    private String nightstand = checkAndLoadTexture("mods/textures/nightstand.png", "res/textures/nightstand.png");
+    private String door = checkAndLoadTexture("mods/textures/door.png", "res/textures/door.png");
+
+    private String checkAndLoadTexture(String modPath, String defaultPath) {
+        if (getClass().getResource(modPath) != null) {
+            return getClass().getResource(modPath).toString();
+        } else {
+            if (getClass().getResource(defaultPath) != null) {
+                return getClass().getResource(defaultPath).toString();
+            } else {
+                throw new IllegalArgumentException("Resource not found: " + defaultPath);
+            }
+        }
+    }
 
 
     private Image grassImg = new Image(grass);

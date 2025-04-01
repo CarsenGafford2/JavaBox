@@ -13,6 +13,8 @@ public class mob {
     private String name;
     private String type;
     private Image img;
+    private String right;
+    private String left;
     private Image rightImage;
     private Image leftImage;
     private int varient = 0;
@@ -28,9 +30,23 @@ public class mob {
 
         Random rand = new Random();
         this.varient = rand.nextInt(2);
-        this.rightImage = new Image(getClass().getResource("res/mob/" + this.type + this.varient + ".png").toString());
-        this.leftImage = new Image(getClass().getResource("res/mob/" + this.type + this.varient + "r" + ".png").toString());
+        this.right = checkAndLoadTexture("mods/mob/" + this.type + this.varient + ".png", "res/mob/" + this.type + this.varient + ".png");
+        this.left = checkAndLoadTexture("mods/mob/" + this.type + this.varient + "r" + ".png", "res/mob/" + this.type + this.varient + "r" + ".png");
+        this.rightImage = new Image(right);
+        this.leftImage = new Image(left);
         this.img = rightImage;
+    }
+
+    private String checkAndLoadTexture(String modPath, String defaultPath) {
+        if (getClass().getResource(modPath) != null) {
+            return getClass().getResource(modPath).toString();
+        } else {
+            if (getClass().getResource(defaultPath) != null) {
+                return getClass().getResource(defaultPath).toString();
+            } else {
+                throw new IllegalArgumentException("Resource not found: " + defaultPath);
+            }
+        }
     }
 
     public void move() {
