@@ -46,7 +46,8 @@ public class PrimaryController {
     private String door = checkAndLoadTexture("mods/textures/door.png", "res/textures/door.png");
 
     private String checkAndLoadTexture(String modPath, String defaultPath) {
-        if (getClass().getResource(modPath) != null) {
+        boolean mod = false;
+        if (getClass().getResource(modPath) != null && mod) {
             return getClass().getResource(modPath).toString();
         } else {
             if (getClass().getResource(defaultPath) != null) {

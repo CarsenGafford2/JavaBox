@@ -92,7 +92,7 @@ public class Npc {
                 }
             }
         } else if (this.task.equals("build")) {
-            List<Map.Entry<Point, Integer>> buildInstructions = Arrays.asList(
+                List<Map.Entry<Point, Integer>> buildInstructions = Arrays.asList(
                 new AbstractMap.SimpleEntry<>(new Point(xpos, ypos - 1), 7),
                 new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
                 new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
@@ -118,10 +118,9 @@ public class Npc {
                 new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 12),
                 new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
                 new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7)
-            );
+                );
 
-
-            if (buildStep < buildInstructions.size()) {
+                if (buildStep < buildInstructions.size()) {
                 if (this.wood < 14) {
                     this.task = "wood";
                 } else if (this.stone < 11) {
@@ -130,18 +129,22 @@ public class Npc {
                     Map.Entry<Point, Integer> instruction = buildInstructions.get(buildStep);
                     Point target = instruction.getKey();
                     int tileType = instruction.getValue();
+
+                    // Ensure the target is within map bounds
+                    if (target.x >= 0 && target.y >= 0 && target.x < maxWidth && target.y < maxHeight) {
                     Point movePoint = new Point(target.x, target.y + 1);
                     map[target.y][target.x] = tileType;
                     moveToTarget(movePoint, 756);
+                    }
                     buildStep++;
                 }
-            } else {
+                } else {
                 this.task = "wander";
                 path = null;
                 this.stone -= 11;
                 this.wood -= 14;
                 this.buildStep = 0;
-            }
+                }
         }
     }
         private Point findNearestResource(String resource) {
