@@ -92,7 +92,7 @@ public class Npc {
                 }
             }
         } else if (this.task.equals("build")) {
-                List<Map.Entry<Point, Integer>> mediumBlueprinEntries = Arrays.asList(
+                List<Map.Entry<Point, Integer>> mediumBlueprint = Arrays.asList(
                 new AbstractMap.SimpleEntry<>(new Point(xpos, ypos - 1), 7),
                 new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
                 new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
@@ -107,6 +107,44 @@ public class Npc {
                 new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
                 new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
                 new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 10),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
                 new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7)
                 );
                 List<Map.Entry<Point, Integer>> basicBlueprint = Arrays.asList(
@@ -137,13 +175,13 @@ public class Npc {
                 new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7)
                 );
 
-                if (buildStep < mediumBlueprinEntries.size()) {
+                if (buildStep < basicBlueprint.size()) {
                 if (this.wood < 14) {
                     this.task = "wood";
                 } else if (this.stone < 11) {
                     this.task = "stone";
                 } else {
-                    Map.Entry<Point, Integer> instruction = mediumBlueprinEntries.get(buildStep);
+                    Map.Entry<Point, Integer> instruction = basicBlueprint.get(buildStep);
                     Point target = instruction.getKey();
                     int tileType = instruction.getValue();
 
