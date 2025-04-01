@@ -152,7 +152,7 @@ public class PrimaryController {
 
         Random r = new Random();
         System.out.print("\033[H\033[2J");
-        int i = 10000;
+        int i = 1000;
         for (int index = 0; index < i; index++) {
             int x = r.nextInt(mapWidth);
             int y = r.nextInt(mapHeight);
@@ -223,7 +223,8 @@ public class PrimaryController {
 
         private int[][] generateMap(int width, int height) {
             int[][] generatedMap = new int[height][width];
-            long seed = 781029377;
+            Random rand = new Random();
+            long seed = 100 + (long) (rand.nextDouble() * (1000000 - 100));
         
             for (int y = 0; y < height; y++) {
                 int percent = (y * 100) / height;
