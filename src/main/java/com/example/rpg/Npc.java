@@ -1,6 +1,7 @@
 package com.example.rpg;
 
 import java.util.*;
+import java.awt.Point;
 
 import javafx.scene.image.Image;
 
@@ -14,13 +15,15 @@ public class Npc {
     private String name;
     private Image img;
     private String task;
-    private boolean[][] tempMap;
-    private boolean completed = true;
-    private int stone;
     // private int wood;
     private Image rightImage;
     private Image leftImage;
     private int varient = 0;
+
+    private int wood = 0;
+    private int stone = 0;
+
+    private int buildStep = 0;
 
     List<Point> path;
     public Npc(int xpos, int ypos, String name, int[][] map) {
@@ -30,8 +33,7 @@ public class Npc {
         this.maxHeight = map.length;
         this.maxWidth = map[0].length;
         this.map = map;
-        this.task = "wander";
-        this.tempMap = new boolean[maxHeight][maxWidth];
+        this.task = "build";
 
         Random rand = new Random();
         this.varient = rand.nextInt(21);
@@ -42,78 +44,244 @@ public class Npc {
 
     public void move() {
         if (this.task.equals("wander")) {
-            Random rand = new Random();
-            int temp = rand.nextInt(4);
-            if (temp == 0) {
-                if (xpos + 1 < maxWidth && map[ypos][xpos + 1] == 0 || xpos + 1 < maxWidth && map[ypos][xpos + 1] == 6)
-                    xpos++;
-                    img = rightImage;
-            } else if (temp == 1) {
-                if (xpos - 1 >= 0 && map[ypos][xpos - 1] == 0 || xpos - 1 >= 0 && map[ypos][xpos - 1] == 6)
-                    xpos--;
-                    img = leftImage;
-            } else if (temp == 2) {
-                if (ypos + 1 < maxHeight && map[ypos + 1][xpos] == 0 || ypos + 1 < maxHeight && map[ypos + 1][xpos] == 6)
-                    ypos++;
-            } else if (temp == 3) {
-                if (ypos - 1 >= 0 && map[ypos - 1][xpos] == 0 || ypos - 1 >= 0 && map[ypos - 1][xpos] == 6)
-                    ypos--;
-            }
-            this.task = "stone";
-        } else if (this.task.equals("stone")) {
-            int[] coords = findStone();
-            if (coords != null) {
-                if (completed) {
+            if (path == null) {
+                Random rand = new Random();
+                Point target = null;
 
-                    for (int y = 0; y < maxHeight; y++)
-                        for (int x = 0; x < maxWidth; x++) {
-                            if (map[y][x] == 0) {
-                                tempMap[y][x] = true;
-                            } else {
-                                tempMap[y][x] = false;
-                            }
-                        }
-                    Grid grid = new Grid(maxHeight, maxWidth, tempMap);
-                    Point start = new Point(xpos, ypos);
-                    Point target = new Point(coords[0], coords[1]);
-                    path = PathFinding.findPath(grid, start, target, false);
-                    if (path != null && !path.isEmpty()) {
-                        completed = false;
-                    } else {
-                        this.task = "wander";
-                    }   
-                } else {
-                    if (path != null && !path.isEmpty()) {
-                        this.xpos = path.get(0).x;
-                        this.ypos = path.get(0).y;
-                        path.remove(0);
-                    } else {
-                        completed = true;
-                        this.path = null;
-                        stone++;
-                        System.out.println("Stone collected: " + stone);
+                for (int attempts = 0; attempts < 100; attempts++) {
+                    int targetX = xpos + rand.nextInt(21) - 10;
+                    int targetY = ypos + rand.nextInt(21) - 10;
+
+                    if (targetX >= 0 && targetY >= 0 && targetX < maxWidth && targetY < maxHeight && map[targetY][targetX] == 0) {
+                        target = new Point(targetX, targetY);
+                        break;
                     }
                 }
+
+                if (target != null) {
+                    path = aStarPathfinding(new Point(xpos, ypos), target, 0);
+                } else {
+                    System.out.println("No valid wander target found.");
+                }
+            }
+
+            if (path != null && !path.isEmpty()) {
+                Point nextStep = path.remove(0);
+                moveToTarget(nextStep, 0);
+            } else {
+                this.task = "build";
+            }
+        } else if (this.task.equals("stone")) {
+            if (stone >= 11) {
+                this.task = "wander";
+                path = null;
+            } else {
+                Point target = findNearestResource("stone");
+                if (target != null) {
+                    moveToTarget(target, 1);
+                }
+            }
+        } else if (this.task.equals("wood")) {
+            if (wood >= 14) {
+                this.task = "wander";
+                path = null;
+            } else {
+                Point target = findNearestResource("wood");
+                if (target != null) {
+                    moveToTarget(target, 3);
+                }
+            }
+        } else if (this.task.equals("build")) {
+            List<Map.Entry<Point, Integer>> buildInstructions = Arrays.asList(
+                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 9),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 11),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 10),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
+                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 12),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
+                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7)
+            );
+
+
+            if (buildStep < buildInstructions.size()) {
+                if (this.wood < 14) {
+                    this.task = "wood";
+                } else if (this.stone < 11) {
+                    this.task = "stone";
+                } else {
+                    Map.Entry<Point, Integer> instruction = buildInstructions.get(buildStep);
+                    Point target = instruction.getKey();
+                    int tileType = instruction.getValue();
+                    Point movePoint = new Point(target.x, target.y + 1);
+                    map[target.y][target.x] = tileType;
+                    moveToTarget(movePoint, 756);
+                    buildStep++;
+                }
+            } else {
+                this.task = "wander";
+                path = null;
+                this.stone -= 11;
+                this.wood -= 14;
+                this.buildStep = 0;
             }
         }
     }
-        private int[] findStone() {
-            int[] closestStone = null;
-            double minDistance = Double.MAX_VALUE;
+        private Point findNearestResource(String resource) {
+            int targetType;
+            if (resource.equals("stone")) {
+                targetType = 1;
+            } else if (resource.equals("wood")) {
+                targetType = 3;
+            } else {
+                targetType = -1;
+            }
+            if (targetType == -1) return null;
 
-            for (int y = 0; y < maxHeight; y++) {
-            for (int x = 0; x < maxWidth; x++) {
-                if (map[y][x] == 1) {
-                double distance = Math.sqrt(Math.pow(x - xpos, 2) + Math.pow(y - ypos, 2));
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestStone = new int[] { x, y };
+            boolean[][] visited = new boolean[maxHeight][maxWidth];
+            PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparingInt(n -> n.cost));
+            queue.add(new Node(xpos, ypos, 0));
+            visited[ypos][xpos] = true;
+
+            while (!queue.isEmpty()) {
+                Node current = queue.poll();
+                int cx = current.x;
+                int cy = current.y;
+
+                if (map[cy][cx] == targetType) {
+                    return new Point(cx, cy); // Found the nearest resource
                 }
+
+                for (int[] dir : new int[][]{{0, 1}, {1, 0}, {0, -1}, {-1, 0}}) {
+                    int nx = cx + dir[0];
+                    int ny = cy + dir[1];
+
+                    if (nx >= 0 && ny >= 0 && nx < maxWidth && ny < maxHeight && !visited[ny][nx] && (map[ny][nx] == 0 || map[ny][nx] == targetType)) {
+                        queue.add(new Node(nx, ny, current.cost + 1));
+                        visited[ny][nx] = true;
+                    }
                 }
             }
-            }
-            return closestStone;
+            return null;
         }
+
+        private void moveToTarget(Point target, int specialWalkable) {
+                if (target == null) return;
+
+                List<Point> path = aStarPathfinding(new Point(xpos, ypos), target, specialWalkable);
+                if (path != null && !path.isEmpty()) {
+                    Point nextStep = path.get(0);
+                    if (nextStep.x > xpos) {
+                        if (map[ypos][xpos + 1] == 1) {
+                            stone++;
+                        } else if (map[ypos][xpos + 1] == 3) {
+                            wood++;
+                        }
+                        xpos++;
+                        img = rightImage;
+                    } else if (nextStep.x < xpos) {
+                        if (map[ypos][xpos - 1] == 1) {
+                            stone++;
+                        } else if (map[ypos][xpos - 1] == 3) {
+                            wood++;
+                        }
+                        xpos--;
+                        img = leftImage;
+                    } else if (nextStep.y > ypos) {
+                        if (map[ypos + 1][xpos] == 1) {
+                            stone++;
+                        } else if (map[ypos + 1][xpos] == 3) {
+                            wood++;
+                        }
+                        ypos++;
+                    } else if (nextStep.y < ypos) {
+                        if (map[ypos - 1][xpos] == 1) {
+                            stone++;
+                        } else if (map[ypos - 1][xpos] == 3) {
+                            wood++;
+                        }
+                        ypos--;
+                    }
+                }
+            }
+
+            private List<Point> aStarPathfinding(Point start, Point goal, int specialWalkable) {
+                PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingInt(n -> n.cost + n.heuristic));
+                Map<Point, Point> cameFrom = new HashMap<>();
+                Map<Point, Integer> gScore = new HashMap<>();
+                gScore.put(start, 0);
+
+                openSet.add(new Node(start.x, start.y, 0, heuristic(start, goal)));
+
+                while (!openSet.isEmpty()) {
+                    Node current = openSet.poll();
+                    Point currentPoint = new Point(current.x, current.y);
+
+                    if (currentPoint.equals(goal)) {
+                        return reconstructPath(cameFrom, currentPoint);
+                    }
+
+                    for (int[] dir : new int[][]{{0, 1}, {1, 0}, {0, -1}, {-1, 0}}) {
+                        Point neighbor = new Point(current.x + dir[0], current.y + dir[1]);
+                        if (specialWalkable != 756 && (neighbor.x < 0 || neighbor.y < 0 || neighbor.x >= maxWidth || neighbor.y >= maxHeight || (map[neighbor.y][neighbor.x] != 0 && map[neighbor.y][neighbor.x] != specialWalkable))) {
+                            continue;
+                        }
+
+                        int tentativeGScore = gScore.getOrDefault(currentPoint, Integer.MAX_VALUE) + 1;
+                        if (tentativeGScore < gScore.getOrDefault(neighbor, Integer.MAX_VALUE)) {
+                            cameFrom.put(neighbor, currentPoint);
+                            gScore.put(neighbor, tentativeGScore);
+                            openSet.add(new Node(neighbor.x, neighbor.y, tentativeGScore, heuristic(neighbor, goal)));
+                        }
+                    }
+                }
+                return null;
+            }
+
+            private List<Point> reconstructPath(Map<Point, Point> cameFrom, Point current) {
+                List<Point> path = new ArrayList<>();
+                while (cameFrom.containsKey(current)) {
+                    path.add(0, current);
+                    current = cameFrom.get(current);
+                }
+                return path;
+            }
+
+            private int heuristic(Point a, Point b) {
+                return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); // Manhattan distance
+            }
+
+            private static class Node {
+                int x, y, cost, heuristic;
+
+                Node(int x, int y, int cost) {
+                    this(x, y, cost, 0);
+                }
+
+                Node(int x, int y, int cost, int heuristic) {
+                    this.x = x;
+                    this.y = y;
+                    this.cost = cost;
+                    this.heuristic = heuristic;
+                }
+            }
 
     public int getxPos() {
         return xpos;
@@ -130,4 +298,17 @@ public class Npc {
     public Image getImage() {
         return img;
     }
+
+    public int getWood() {
+        return wood;
+    }
+
+    public int getStone() {
+        return stone;
+    }
+
+    public String getTask() {
+        return task;
+    }
+    
 }

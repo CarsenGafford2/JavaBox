@@ -40,6 +40,10 @@ public class PrimaryController {
     private String sand = getClass().getResource("res/textures/sand.png").toString();
     private String brick = getClass().getResource("res/textures/brick.png").toString();
     private String wood = getClass().getResource("res/textures/wood.png").toString();
+    private String bedTop = getClass().getResource("res/textures/bedTop.png").toString();
+    private String bedBottom = getClass().getResource("res/textures/bedBottom.png").toString();
+    private String nightstand = getClass().getResource("res/textures/nightstand.png").toString();
+    private String door = getClass().getResource("res/textures/door.png").toString();
 
 
     private Image grassImg = new Image(grass);
@@ -49,6 +53,10 @@ public class PrimaryController {
     private Image sandImage = new Image(sand);
     private Image brickImage = new Image(brick);
     private Image woodImage = new Image(wood);
+    private Image bedTopImage = new Image(bedTop);
+    private Image bedBottomImage = new Image(bedBottom);
+    private Image nightstandImage = new Image(nightstand);
+    private Image doorImage = new Image(door);
 
     private ArrayList<Npc> npcList = new ArrayList<>();
     private ArrayList<mob> mobList = new ArrayList<>();
@@ -201,6 +209,8 @@ public class PrimaryController {
                         numberKeypressed = 6;
                     } else if (event.getCode() == KeyCode.DIGIT8) {
                         numberKeypressed = 7;
+                    } else if (event.getCode() == KeyCode.DIGIT0) {
+                        numberKeypressed = 78;
                     }
                     renderMap();
                 });
@@ -384,6 +394,14 @@ public class PrimaryController {
                         image = brickImage;
                     } else if (map[mapRow][mapCol] == 8) { // Wood
                         image = woodImage;
+                    } else if (map[mapRow][mapCol] == 9) { // bedTop
+                        image = bedTopImage;
+                    } else if (map[mapRow][mapCol] == 10) { // bedBottom
+                        image = bedBottomImage;
+                    } else if (map[mapRow][mapCol] == 11) { // nightstand
+                        image = nightstandImage;
+                    } else if (map[mapRow][mapCol] == 12) { // door
+                        image = doorImage;
                     }
                     ImageView imageView = new ImageView(image);
                     imageView.setFitWidth(50);
@@ -394,7 +412,7 @@ public class PrimaryController {
                         Tooltip t = new Tooltip("Error");
                         for (Npc guy : npcList) {
                             if (guy.getxPos() == mapCol && guy.getyPos() == mapRow) {
-                                t = new Tooltip(guy.getName());
+                                t = new Tooltip(guy.getName() + "\n" + "Current Task: " + guy.getTask() + "\n" + "Stone: " + guy.getStone() + "\n" + "Wood: " + guy.getWood());
                             }
                         }
                         t.setShowDelay(javafx.util.Duration.ZERO);
@@ -439,6 +457,9 @@ public class PrimaryController {
                             renderMap();
                         } else if (numberKeypressed == 7) {
                             map[clickedRow][clickedCol] = 8;
+                            renderMap();
+                        } else if (numberKeypressed == 78) {
+                            map[clickedRow][clickedCol] = 0;
                             renderMap();
                         }
                     });
