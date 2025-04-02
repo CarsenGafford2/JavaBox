@@ -1,7 +1,10 @@
 package com.example.rpg;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.awt.Point;
+import java.io.File;
+import java.net.URISyntaxException;
 
 import javafx.scene.image.Image;
 
@@ -92,88 +95,8 @@ public class Npc {
                 }
             }
         } else if (this.task.equals("build")) {
-                List<Map.Entry<Point, Integer>> mediumBlueprint = Arrays.asList(
-                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 9),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 11),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 10),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7)
-                );
-                List<Map.Entry<Point, Integer>> basicBlueprint = Arrays.asList(
-                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 9),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 11),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 10),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 8),
-                new AbstractMap.SimpleEntry<>(new Point(xpos - 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos, ypos), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 12),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7),
-                new AbstractMap.SimpleEntry<>(new Point(xpos + 1, ypos - 1), 7)
-                );
+                List<Map.Entry<Point, Integer>> basicBlueprint = loadBlueprintFromJson("buildings/basicBlueprint.json");
+                // List<Map.Entry<Point, Integer>> mediumBlueprint = loadBlueprintFromJson("buildings/mediumBlueprint.json");
 
                 if (buildStep < basicBlueprint.size()) {
                 if (this.wood < 14) {
@@ -183,7 +106,9 @@ public class Npc {
                 } else {
                     Map.Entry<Point, Integer> instruction = basicBlueprint.get(buildStep);
                     Point target = instruction.getKey();
+                    System.out.println("Target: " + target.x + ", " + target.y);
                     int tileType = instruction.getValue();
+                    System.out.println("Tile Type: " + tileType);
 
                     // Ensure the target is within map bounds
                     if (target.x >= 0 && target.y >= 0 && target.x < maxWidth && target.y < maxHeight) {
@@ -194,14 +119,45 @@ public class Npc {
                     buildStep++;
                 }
                 } else {
-                this.task = "wander";
-                path = null;
-                this.stone -= 11;
-                this.wood -= 14;
-                this.buildStep = 0;
+                    this.task = "wander";
+                    path = null;
+                    this.stone -= 11;
+                    this.wood -= 14;
+                    this.buildStep = 0;
                 }
+            }
         }
-    }
+
+        private List<Entry<Point, Integer>> loadBlueprintFromJson(String filePath) {
+            List<Entry<Point, Integer>> blueprint = new ArrayList<>();
+            File file = null;
+            try {
+                if (getClass().getResource(filePath) != null) {
+                    file = new File(getClass().getResource(filePath).toURI());
+                } else {
+                    System.err.println("Resource not found: " + filePath);
+                    return blueprint; // Return an empty blueprint if the resource is missing
+                }
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+            try (Scanner scanner = new Scanner(file)) {
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    String[] parts = line.split(",");
+                    if (parts.length == 3) {
+                        int x = Integer.parseInt(parts[0].trim());
+                        int y = Integer.parseInt(parts[1].trim());
+                        int tileType = Integer.parseInt(parts[2].trim());
+                        blueprint.add(new AbstractMap.SimpleEntry<>(new Point(xpos + x, ypos + y), tileType));
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading blueprint from JSON: " + e.getMessage());
+            }
+            return blueprint;
+        }
+
         private Point findNearestResource(String resource) {
             int targetType;
             if (resource.equals("stone")) {
