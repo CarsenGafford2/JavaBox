@@ -33,19 +33,24 @@ public class PrimaryController {
     private int percent = 0;
     private int numberKeypressed = 0;
 
-    private String grass = checkAndLoadTexture("mods/textures/grass.png", "res/textures/grass.png");
-    private String rock = checkAndLoadTexture("mods/textures/rock.png", "res/textures/rock.png");
-    private String tree = checkAndLoadTexture("mods/textures/tree.png", "res/textures/tree.png");
-    private String water = checkAndLoadTexture("mods/textures/water.png", "res/textures/water.png");
-    private String sand = checkAndLoadTexture("mods/textures/sand.png", "res/textures/sand.png");
-    private String brick = checkAndLoadTexture("mods/textures/brick.png", "res/textures/brick.png");
-    private String wood = checkAndLoadTexture("mods/textures/wood.png", "res/textures/wood.png");
-    private String bedTop = checkAndLoadTexture("mods/textures/bedTop.png", "res/textures/bedTop.png");
-    private String bedBottom = checkAndLoadTexture("mods/textures/bedBottom.png", "res/textures/bedBottom.png");
-    private String nightstand = checkAndLoadTexture("mods/textures/nightstand.png", "res/textures/nightstand.png");
-    private String door = checkAndLoadTexture("mods/textures/door.png", "res/textures/door.png");
+    private String grass = checkForModTexture("mods/textures/grass.png", "res/textures/grass.png");
+    private String rock = checkForModTexture("mods/textures/rock.png", "res/textures/rock.png");
+    private String tree = checkForModTexture("mods/textures/tree.png", "res/textures/tree.png");
+    private String water = checkForModTexture("mods/textures/water.png", "res/textures/water.png");
+    private String sand = checkForModTexture("mods/textures/sand.png", "res/textures/sand.png");
+    private String brick = checkForModTexture("mods/textures/brick.png", "res/textures/brick.png");
+    private String wood = checkForModTexture("mods/textures/wood.png", "res/textures/wood.png");
+    private String bedTop = checkForModTexture("mods/textures/bedTop.png", "res/textures/bedTop.png");
+    private String bedBottom = checkForModTexture("mods/textures/bedBottom.png", "res/textures/bedBottom.png");
+    private String nightstand = checkForModTexture("mods/textures/nightstand.png", "res/textures/nightstand.png");
+    private String door = checkForModTexture("mods/textures/door.png", "res/textures/door.png");
+    private String chair = checkForModTexture("mods/textures/chair.png", "res/textures/chair.png");
+    private String tableBleft = checkForModTexture("mods/textures/tableBleft.png", "res/textures/tableBleft.png");
+    private String tableBright = checkForModTexture("mods/textures/tableBright.png", "res/textures/tableBright.png");
+    private String tableTright = checkForModTexture("mods/textures/tableTright.png", "res/textures/tableTright.png");
+    private String tableTleft = checkForModTexture("mods/textures/tableTleft.png", "res/textures/tableTleft.png");
 
-    private String checkAndLoadTexture(String modPath, String defaultPath) {
+    private String checkForModTexture(String modPath, String defaultPath) {
         boolean mod = false;
         if (getClass().getResource(modPath) != null && mod) {
             return getClass().getResource(modPath).toString();
@@ -70,6 +75,11 @@ public class PrimaryController {
     private Image bedBottomImage = new Image(bedBottom);
     private Image nightstandImage = new Image(nightstand);
     private Image doorImage = new Image(door);
+    private Image chairImage = new Image(chair);
+    private Image tableBleftImage = new Image(tableBleft);
+    private Image tableBrightImage = new Image(tableBright);
+    private Image tableTrightImage = new Image(tableTright);
+    private Image tableTleftImage = new Image(tableTleft);
 
     private ArrayList<Npc> npcList = new ArrayList<>();
     private ArrayList<mob> mobList = new ArrayList<>();
@@ -193,7 +203,7 @@ public class PrimaryController {
                 }
                 renderMap();
             }
-        }, 0, 500);
+        }, 0, 200);
 
         gridPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
@@ -416,6 +426,16 @@ public class PrimaryController {
                         image = nightstandImage;
                     } else if (map[mapRow][mapCol] == 12) { // door
                         image = doorImage;
+                    } else if (map[mapRow][mapCol] == 13) { // chair
+                        image = chairImage;
+                    } else if (map[mapRow][mapCol] == 14) { // tableBleft
+                        image = tableBleftImage;
+                    } else if (map[mapRow][mapCol] == 15) { // tableBright
+                        image = tableBrightImage;
+                    } else if (map[mapRow][mapCol] == 16) { // tableTright
+                        image = tableTrightImage;
+                    } else if (map[mapRow][mapCol] == 17) { // tableTleft
+                        image = tableTleftImage;
                     }
                     ImageView imageView = new ImageView(image);
                     imageView.setFitWidth(50);

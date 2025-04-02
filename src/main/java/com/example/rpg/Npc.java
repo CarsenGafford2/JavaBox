@@ -95,22 +95,19 @@ public class Npc {
                 }
             }
         } else if (this.task.equals("build")) {
-                List<Map.Entry<Point, Integer>> basicBlueprint = loadBlueprintFromJson("buildings/basicBlueprint.json");
-                // List<Map.Entry<Point, Integer>> mediumBlueprint = loadBlueprintFromJson("buildings/mediumBlueprint.json");
+                List<Map.Entry<Point, Integer>> basicBlueprint = loadBlueprintFromCsv("buildings/basicBlueprint.csv");
+                List<Map.Entry<Point, Integer>> mediumBlueprint = loadBlueprintFromCsv("buildings/mediumBlueprint.csv");
 
-                if (buildStep < basicBlueprint.size()) {
+                if (buildStep < mediumBlueprint.size()) {
                 if (this.wood < 14) {
                     this.task = "wood";
                 } else if (this.stone < 11) {
                     this.task = "stone";
                 } else {
-                    Map.Entry<Point, Integer> instruction = basicBlueprint.get(buildStep);
+                    Map.Entry<Point, Integer> instruction = mediumBlueprint.get(buildStep);
                     Point target = instruction.getKey();
-                    System.out.println("Target: " + target.x + ", " + target.y);
                     int tileType = instruction.getValue();
-                    System.out.println("Tile Type: " + tileType);
 
-                    // Ensure the target is within map bounds
                     if (target.x >= 0 && target.y >= 0 && target.x < maxWidth && target.y < maxHeight) {
                     Point movePoint = new Point(target.x, target.y + 1);
                     map[target.y][target.x] = tileType;
@@ -128,7 +125,7 @@ public class Npc {
             }
         }
 
-        private List<Entry<Point, Integer>> loadBlueprintFromJson(String filePath) {
+        private List<Entry<Point, Integer>> loadBlueprintFromCsv(String filePath) {
             List<Entry<Point, Integer>> blueprint = new ArrayList<>();
             File file = null;
             try {
@@ -136,7 +133,7 @@ public class Npc {
                     file = new File(getClass().getResource(filePath).toURI());
                 } else {
                     System.err.println("Resource not found: " + filePath);
-                    return blueprint; // Return an empty blueprint if the resource is missing
+                    return blueprint;
                 }
             } catch (URISyntaxException e) {
                 e.printStackTrace();
@@ -150,6 +147,8 @@ public class Npc {
                         int y = Integer.parseInt(parts[1].trim());
                         int tileType = Integer.parseInt(parts[2].trim());
                         blueprint.add(new AbstractMap.SimpleEntry<>(new Point(xpos + x, ypos + y), tileType));
+                    } else {
+                        System.err.println("Invalid line format: " + line);
                     }
                 }
             } catch (Exception e) {
@@ -180,7 +179,7 @@ public class Npc {
                 int cy = current.y;
 
                 if (map[cy][cx] == targetType) {
-                    return new Point(cx, cy); // Found the nearest resource
+                    return new Point(cx, cy);
                 }
 
                 for (int[] dir : new int[][]{{0, 1}, {1, 0}, {0, -1}, {-1, 0}}) {
