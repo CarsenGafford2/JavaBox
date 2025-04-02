@@ -23,10 +23,17 @@ public class Npc {
     private Image leftImage;
     private int varient = 0;
 
+    private List<Map.Entry<Point, Integer>> blueprint;
+
+    private int requiredWood = 14;
+    private int requiredStone = 11;
+
     private int wood = 0;
     private int stone = 0;
 
     private int buildStep = 0;
+
+    private int whichBuilding;
 
     List<Point> path;
     public Npc(int xpos, int ypos, String name, int[][] map) {
@@ -39,6 +46,7 @@ public class Npc {
         this.task = "build";
 
         Random rand = new Random();
+        this.whichBuilding = rand.nextInt(2);
         this.varient = rand.nextInt(21);
         this.rightImage = new Image(getClass().getResource("res/npc/guy" + this.varient + ".png").toString());
         this.leftImage = new Image(getClass().getResource("res/npc/guy" + this.varient + "r" + ".png").toString());
@@ -75,7 +83,7 @@ public class Npc {
                 this.task = "build";
             }
         } else if (this.task.equals("stone")) {
-            if (stone >= 11) {
+            if (stone >= requiredStone) {
                 this.task = "wander";
                 path = null;
             } else {
@@ -85,7 +93,7 @@ public class Npc {
                 }
             }
         } else if (this.task.equals("wood")) {
-            if (wood >= 14) {
+            if (wood >= requiredWood) {
                 this.task = "wander";
                 path = null;
             } else {
@@ -95,16 +103,20 @@ public class Npc {
                 }
             }
         } else if (this.task.equals("build")) {
-                List<Map.Entry<Point, Integer>> basicBlueprint = loadBlueprintFromCsv("buildings/basicBlueprint.csv");
-                List<Map.Entry<Point, Integer>> mediumBlueprint = loadBlueprintFromCsv("buildings/mediumBlueprint.csv");
 
-                if (buildStep < mediumBlueprint.size()) {
-                if (this.wood < 14) {
+            if (this.whichBuilding == 0) {
+                this.blueprint = loadBlueprintFromCsv("buildings/basicBlueprint.csv");
+            } else {
+                this.blueprint = loadBlueprintFromCsv("buildings/mediumBlueprint.csv");
+            }
+
+                if (buildStep < this.blueprint.size()) {
+                if (this.wood < requiredWood) {
                     this.task = "wood";
-                } else if (this.stone < 11) {
+                } else if (this.stone < requiredStone) {
                     this.task = "stone";
                 } else {
-                    Map.Entry<Point, Integer> instruction = mediumBlueprint.get(buildStep);
+                    Map.Entry<Point, Integer> instruction = this.blueprint.get(buildStep);
                     Point target = instruction.getKey();
                     int tileType = instruction.getValue();
 
@@ -118,8 +130,8 @@ public class Npc {
                 } else {
                     this.task = "wander";
                     path = null;
-                    this.stone -= 11;
-                    this.wood -= 14;
+                    this.stone -= requiredStone;
+                    this.wood -= requiredWood;
                     this.buildStep = 0;
                 }
             }
@@ -152,7 +164,7 @@ public class Npc {
                     }
                 }
             } catch (Exception e) {
-                System.err.println("Error loading blueprint from JSON: " + e.getMessage());
+                System.err.println("Error loading blueprint from CSV: " + e.getMessage());
             }
             return blueprint;
         }
