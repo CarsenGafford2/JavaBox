@@ -326,7 +326,7 @@ public class PrimaryController {
             }
         }
 
-        private void spawnNpc(int x, int y) {
+    private void spawnNpc(int x, int y) {
         Random rand = new Random();
         if (!names.isEmpty()) {
             npcList.add(new Npc(y, x, names.get(rand.nextInt(names.size())), map));
@@ -446,7 +446,7 @@ public class PrimaryController {
                         Tooltip t = new Tooltip("Error");
                         for (Npc guy : npcList) {
                             if (guy.getxPos() == mapCol && guy.getyPos() == mapRow) {
-                                t = new Tooltip(guy.getName() + "\n" + "Current Task: " + guy.getTask() + "\n" + "Stone: " + guy.getStone() + "\n" + "Wood: " + guy.getWood());
+                                t = new Tooltip(guy.getName() + "\n" + "Current Task: " + guy.getTask() + "\n" + "Stone: " + guy.getStone() + "\n" + "Wood: " + guy.getWood() + "\n" + "Traits:" + guy.getTraits());
                             }
                         }
                         t.setShowDelay(javafx.util.Duration.ZERO);

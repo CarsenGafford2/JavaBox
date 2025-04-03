@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.awt.Point;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.net.URISyntaxException;
 
 import javafx.scene.image.Image;
@@ -35,6 +36,8 @@ public class Npc {
 
     private int whichBuilding;
 
+    private ArrayList<String> traits = new ArrayList<String>();
+
     List<Point> path;
     public Npc(int xpos, int ypos, String name, int[][] map) {
         this.xpos = xpos;
@@ -44,6 +47,7 @@ public class Npc {
         this.maxWidth = map[0].length;
         this.map = map;
         this.task = "build";
+        this.traits.add("recycler");
 
         Random rand = new Random();
         this.whichBuilding = rand.nextInt(2);
@@ -87,9 +91,22 @@ public class Npc {
                 this.task = "wander";
                 path = null;
             } else {
-                Point target = findNearestResource("stone");
-                if (target != null) {
-                    moveToTarget(target, 1);
+                if (this.traits.contains("recycler")) {
+                    Point target = findNearestTile(7);
+                    if (target != null) {
+                        moveToTarget(target, 7);
+                    } else {
+                        this.task = "wander";
+                        path = null;
+                    }
+                } else {
+                    Point target = findNearestTile(1);
+                    if (target != null) {
+                        moveToTarget(target, 1);
+                    } else {
+                        this.task = "wander";
+                        path = null;
+                    }
                 }
             }
         } else if (this.task.equals("wood")) {
@@ -97,9 +114,16 @@ public class Npc {
                 this.task = "wander";
                 path = null;
             } else {
-                Point target = findNearestResource("wood");
-                if (target != null) {
-                    moveToTarget(target, 3);
+                if (this.traits.contains("recycler")) {
+                    Point target = findNearestTile(8);
+                    if (target != null) {
+                        moveToTarget(target, 8);
+                    }
+                } else {
+                    Point target = findNearestTile(3);
+                    if (target != null) {
+                        moveToTarget(target, 3);
+                    }
                 }
             }
         } else if (this.task.equals("build")) {
@@ -173,16 +197,10 @@ public class Npc {
             return blueprint;
         }
 
-        private Point findNearestResource(String resource) {
-            int targetType;
-            if (resource.equals("stone")) {
-                targetType = 1;
-            } else if (resource.equals("wood")) {
-                targetType = 3;
-            } else {
-                targetType = -1;
+        private Point findNearestTile(int targetType) {
+            if (targetType == -1) {
+                return null;
             }
-            if (targetType == -1) return null;
 
             boolean[][] visited = new boolean[maxHeight][maxWidth];
             PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparingInt(n -> n.cost));
@@ -218,32 +236,32 @@ public class Npc {
                 if (path != null && !path.isEmpty()) {
                     Point nextStep = path.get(0);
                     if (nextStep.x > xpos) {
-                        if (map[ypos][xpos + 1] == 1) {
+                        if (map[ypos][xpos + 1] == 1 || map[ypos][xpos + 1] == 7) {
                             stone++;
-                        } else if (map[ypos][xpos + 1] == 3) {
+                        } else if (map[ypos][xpos + 1] == 3 || map[ypos][xpos + 1] == 8) {
                             wood++;
                         }
                         xpos++;
                         img = rightImage;
                     } else if (nextStep.x < xpos) {
-                        if (map[ypos][xpos - 1] == 1) {
+                        if (map[ypos][xpos - 1] == 1 || map[ypos][xpos - 1] == 7) {
                             stone++;
-                        } else if (map[ypos][xpos - 1] == 3) {
+                        } else if (map[ypos][xpos - 1] == 3 || map[ypos][xpos - 1] == 8) {
                             wood++;
                         }
                         xpos--;
                         img = leftImage;
                     } else if (nextStep.y > ypos) {
-                        if (map[ypos + 1][xpos] == 1) {
+                        if (map[ypos + 1][xpos] == 1 || map[ypos + 1][xpos] == 7) {
                             stone++;
-                        } else if (map[ypos + 1][xpos] == 3) {
+                        } else if (map[ypos + 1][xpos] == 3 || map[ypos + 1][xpos] == 8) {
                             wood++;
                         }
                         ypos++;
                     } else if (nextStep.y < ypos) {
-                        if (map[ypos - 1][xpos] == 1) {
+                        if (map[ypos - 1][xpos] == 1 || map[ypos - 1][xpos] == 7) {
                             stone++;
-                        } else if (map[ypos - 1][xpos] == 3) {
+                        } else if (map[ypos - 1][xpos] == 3 || map[ypos - 1][xpos] == 8) {
                             wood++;
                         }
                         ypos--;
@@ -338,6 +356,10 @@ public class Npc {
 
     public String getTask() {
         return task;
+    }
+
+    public ArrayList<String> getTraits() {
+        return traits;
     }
     
 }
