@@ -199,6 +199,8 @@ public class Npc {
 
         private Point findNearestTile(int targetType) {
             if (targetType == -1) {
+                this.task = "wander";
+                this.path = null;
                 return null;
             }
 
@@ -226,6 +228,8 @@ public class Npc {
                     }
                 }
             }
+            this.task = "wander";
+            this.path = null;
             return null;
         }
 
