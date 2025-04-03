@@ -104,9 +104,13 @@ public class Npc {
             }
         } else if (this.task.equals("build")) {
 
-            if (this.whichBuilding == 0) {
+            if (this.whichBuilding == 0) { 
+                this.requiredStone = 11;
+                this.requiredWood = 14;
                 this.blueprint = loadBlueprintFromCsv("buildings/basicBlueprint.csv");
             } else {
+                this.requiredStone = 55;
+                this.requiredWood = 76;
                 this.blueprint = loadBlueprintFromCsv("buildings/mediumBlueprint.csv");
             }
 

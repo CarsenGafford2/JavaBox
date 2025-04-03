@@ -54,19 +54,19 @@ public class mob {
         Random rand = new Random();
         int temp = rand.nextInt(4);
         if (temp == 0) {
-            if (xpos + 1 < maxWidth && map[ypos][xpos + 1] == 0 || xpos + 1 < maxWidth && map[ypos][xpos + 1] == 6) {
+            if (xpos + 1 < maxWidth && map[ypos][xpos + 1] == 0) {
                 xpos++;
                 img = rightImage;
             }
         } else if (temp == 1) {
-            if (xpos - 1 >= 0 && map[ypos][xpos - 1] == 0 || xpos - 1 >= 0 && map[ypos][xpos - 1] == 6) {
+            if (xpos - 1 >= 0 && map[ypos][xpos - 1] == 0) {
                 xpos--;
                 img = leftImage;
             }
         } else if (temp == 2) {
-            if (ypos + 1 < maxHeight && map[ypos + 1][xpos] == 0 || ypos + 1 < maxHeight && map[ypos + 1][xpos] == 6) ypos++;
+            if (ypos + 1 < maxHeight && map[ypos + 1][xpos] == 0) ypos++;
         } else if (temp == 3) {
-            if (ypos - 1 >= 0 && map[ypos - 1][xpos] == 0 || ypos - 1 >= 0 && map[ypos - 1][xpos] == 6) ypos--;
+            if (ypos - 1 >= 0 && map[ypos - 1][xpos] == 0) ypos--;
         }
     }
 
