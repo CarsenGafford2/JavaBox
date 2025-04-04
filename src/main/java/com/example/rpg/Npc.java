@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.awt.Point;
 import java.io.File;
-import java.lang.reflect.Array;
 import java.net.URISyntaxException;
 
 import javafx.scene.image.Image;
@@ -47,7 +46,6 @@ public class Npc {
         this.maxWidth = map[0].length;
         this.map = map;
         this.task = "build";
-        this.traits.add("recycler");
 
         Random rand = new Random();
         this.whichBuilding = rand.nextInt(2);
@@ -162,6 +160,19 @@ public class Npc {
                     this.wood -= requiredWood;
                     this.buildStep = 0;
                 }
+            }
+        } else if (this.task.equals("hunt")) {
+            if (this.traits.contains("hunter")) {
+                Point target = findNearestTile(2);
+                if (target != null) {
+                    moveToTarget(target, 2);
+                } else {
+                    this.task = "wander";
+                    path = null;
+                }
+            } else {
+                this.task = "wander";
+                path = null;
             }
         }
 
