@@ -36,6 +36,8 @@ public class Npc {
 
     private ArrayList<String> traits = new ArrayList<String>();
 
+    private boolean areWeThereYet = false;
+
     List<Point> path;
 
     public Npc(int xpos, int ypos, String name, int[][] map) {
@@ -138,9 +140,9 @@ public class Npc {
 
             if (buildStep == 0) {
                 Point buildLocation = findOpenAreaForBlueprint(this.blueprint);
-                if (buildLocation != null && this.stone >= requiredStone && this.wood >= requiredWood && this.path == null) {
-                    this.xpos = buildLocation.x;
-                    this.ypos = buildLocation.y;
+                if (buildLocation != null && this.stone >= requiredStone && this.wood >= requiredWood && !areWeThereYet) {
+                    moveToTarget(buildLocation, 0);
+                    this.task = "build";
                 }
             }
 
@@ -150,20 +152,23 @@ public class Npc {
                 } else if (this.stone < requiredStone) {
                     this.task = "stone";
                 } else {
-                    Map.Entry<Point, Integer> instruction = this.blueprint.get(buildStep);
-                    Point target = instruction.getKey();
-                    int tileType = instruction.getValue();
+                    if (path == null && areWeThereYet) {
+                        Map.Entry<Point, Integer> instruction = this.blueprint.get(buildStep);
+                        Point target = instruction.getKey();
+                        int tileType = instruction.getValue();
 
-                    if (target.x >= 0 && target.y >= 0 && target.x < maxWidth && target.y < maxHeight) {
-                        Point movePoint = new Point(target.x, target.y + 1);
-                        map[target.y][target.x] = tileType;
-                        moveToTarget(movePoint, 756);
+                        if (target.x >= 0 && target.y >= 0 && target.x < maxWidth && target.y < maxHeight) {
+                            Point movePoint = new Point(target.x, target.y + 1);
+                            map[target.y][target.x] = tileType;
+                            moveToTarget(movePoint, 756);
+                        }
+                        buildStep++;
                     }
-                    buildStep++;
                 }
             } else {
                 this.task = "wander";
                 path = null;
+                areWeThereYet = false;
                 this.stone -= requiredStone;
                 this.wood -= requiredWood;
                 this.buildStep = 0;
