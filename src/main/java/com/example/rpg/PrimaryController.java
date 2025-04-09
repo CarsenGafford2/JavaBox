@@ -196,11 +196,12 @@ public class PrimaryController {
                 }
                 for (mob guy : new ArrayList<>(mobList)) {
                     map[guy.getyPos()][guy.getxPos()] = 0;
-                    guy.move();
                     if (guy.isHunted()) {
                         mobList.remove(guy);
+                    } else {
+                        guy.move();
+                        drawMob(guy);
                     }
-                    drawMob(guy);
                 }
                 renderMap();
             }
