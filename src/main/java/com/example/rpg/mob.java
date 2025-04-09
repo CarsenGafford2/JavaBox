@@ -76,7 +76,10 @@ public class mob {
     public String getName() { return name; }
     public Image getImage() { return img; }
     public boolean isHunted() {
-        if (map[ypos+1][xpos] == 2 || map[ypos-1][xpos] == 2 || map[ypos][xpos+1] == 2 || map[ypos][xpos-1] == 2) {
+        if ((ypos + 1 < maxHeight && map[ypos + 1][xpos] == 2) ||
+            (ypos - 1 >= 0 && map[ypos - 1][xpos] == 2) ||
+            (xpos + 1 < maxWidth && map[ypos][xpos + 1] == 2) ||
+            (xpos - 1 >= 0 && map[ypos][xpos - 1] == 2)) {
             return true;
         } else {
             return false;

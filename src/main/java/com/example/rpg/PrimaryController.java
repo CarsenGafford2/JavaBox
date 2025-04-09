@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Timer;
@@ -194,18 +195,25 @@ public class PrimaryController {
                     guy.move();
                     drawNpc(guy);
                 }
-                for (mob guy : new ArrayList<>(mobList)) {
-                    map[guy.getyPos()][guy.getxPos()] = 0;
-                    if (guy.isHunted()) {
-                        mobList.remove(guy);
+                List<mob> mobListCopy = new ArrayList<>(mobList);
+                for (mob guy : mobListCopy) {
+                    int mobY = guy.getyPos();
+                    int mobX = guy.getxPos();
+                    if (mobY >= 0 && mobY < map.length && mobX >= 0 && mobX < map[0].length) {
+                        map[mobY][mobX] = 0;
+                        if (guy.isHunted()) {
+                            mobList.remove(guy);
+                        } else {
+                            guy.move();
+                            drawMob(guy);
+                        }
                     } else {
-                        guy.move();
-                        drawMob(guy);
+                        System.err.println("Error: Mob position out of bounds: (" + mobY + ", " + mobX + ")");
                     }
                 }
                 renderMap();
             }
-        }, 0, 500);
+        }, 0, 200);
 
         gridPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
