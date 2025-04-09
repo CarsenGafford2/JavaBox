@@ -45,7 +45,7 @@ public class Npc {
         this.maxHeight = map.length;
         this.maxWidth = map[0].length;
         this.map = map;
-        this.task = "build";
+        this.task = "hunt";
 
         Random rand = new Random();
         this.whichBuilding = rand.nextInt(2);
@@ -160,21 +160,16 @@ public class Npc {
                     this.wood -= requiredWood;
                     this.buildStep = 0;
                 }
-            }
         } else if (this.task.equals("hunt")) {
-            if (this.traits.contains("hunter")) {
-                Point target = findNearestTile(2);
-                if (target != null) {
-                    moveToTarget(target, 2);
-                } else {
-                    this.task = "wander";
-                    path = null;
-                }
+            Point target = findNearestTile(4);
+            if (target != null) {
+                moveToTarget(target, 4);
             } else {
                 this.task = "wander";
                 path = null;
             }
         }
+    }
 
         private List<Entry<Point, Integer>> loadBlueprintFromCsv(String filePath) {
             List<Entry<Point, Integer>> blueprint = new ArrayList<>();

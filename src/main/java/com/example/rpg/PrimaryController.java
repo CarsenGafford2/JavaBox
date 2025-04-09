@@ -190,15 +190,16 @@ public class PrimaryController {
             @Override
             public void run() {
                 for (Npc guy : new ArrayList<>(npcList)) {
-                    // map[guy.getyPos()][guy.getxPos()] = cleanMap[guy.getyPos()][guy.getxPos()];
                     map[guy.getyPos()][guy.getxPos()] = 0;
                     guy.move();
                     drawNpc(guy);
                 }
                 for (mob guy : new ArrayList<>(mobList)) {
-                    // map[guy.getyPos()][guy.getxPos()] = cleanMap[guy.getyPos()][guy.getxPos()];
                     map[guy.getyPos()][guy.getxPos()] = 0;
                     guy.move();
+                    if (guy.isHunted()) {
+                        mobList.remove(guy);
+                    }
                     drawMob(guy);
                 }
                 renderMap();

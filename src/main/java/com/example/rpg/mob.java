@@ -75,4 +75,11 @@ public class mob {
     public int getyPos() { return ypos; }
     public String getName() { return name; }
     public Image getImage() { return img; }
+    public boolean isHunted() {
+        if (map[ypos+1][xpos] == 2 || map[ypos-1][xpos] == 2 || map[ypos][xpos+1] == 2 || map[ypos][xpos-1] == 2) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
