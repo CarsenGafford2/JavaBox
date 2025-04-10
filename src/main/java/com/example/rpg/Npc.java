@@ -36,9 +36,7 @@ public class Npc {
 
     private ArrayList<String> traits = new ArrayList<String>();
 
-    private boolean areWeThereYet = false;
-
-    List<Point> path;
+    List<Point> path = null;
 
     public Npc(int xpos, int ypos, String name, int[][] map) {
         this.xpos = xpos;
@@ -47,11 +45,10 @@ public class Npc {
         this.maxHeight = map.length;
         this.maxWidth = map[0].length;
         this.map = map;
-        this.task = "build";
+        this.task = "explore";
 
         Random rand = new Random();
-        // this.whichBuilding = rand.nextInt(2);
-        this.whichBuilding = 0;
+        this.whichBuilding = rand.nextInt(2);
         this.varient = rand.nextInt(21);
         this.rightImage = new Image(getClass().getResource("res/npc/guy" + this.varient + ".png").toString());
         this.leftImage = new Image(getClass().getResource("res/npc/guy" + this.varient + "r" + ".png").toString());
@@ -128,7 +125,7 @@ public class Npc {
                 }
             }
         } else if (this.task.equals("build")) {
-            if (this.whichBuilding == 0) { 
+            if (this.whichBuilding == 0) {
                 this.requiredStone = 11;
                 this.requiredWood = 14;
                 this.blueprint = loadBlueprintFromCsv("buildings/basicBlueprint.csv");
@@ -138,37 +135,26 @@ public class Npc {
                 this.blueprint = loadBlueprintFromCsv("buildings/mediumBlueprint.csv");
             }
 
-            if (buildStep == 0) {
-                Point buildLocation = findOpenAreaForBlueprint(this.blueprint);
-                if (buildLocation != null && this.stone >= requiredStone && this.wood >= requiredWood && !areWeThereYet) {
-                    moveToTarget(buildLocation, 0);
-                    this.task = "build";
-                }
-            }
-
             if (buildStep < this.blueprint.size()) {
                 if (this.wood < requiredWood) {
                     this.task = "wood";
                 } else if (this.stone < requiredStone) {
                     this.task = "stone";
                 } else {
-                    if (path == null && areWeThereYet) {
-                        Map.Entry<Point, Integer> instruction = this.blueprint.get(buildStep);
-                        Point target = instruction.getKey();
-                        int tileType = instruction.getValue();
+                    Map.Entry<Point, Integer> instruction = this.blueprint.get(buildStep);
+                    Point target = instruction.getKey();
+                    int tileType = instruction.getValue();
 
-                        if (target.x >= 0 && target.y >= 0 && target.x < maxWidth && target.y < maxHeight) {
-                            Point movePoint = new Point(target.x, target.y + 1);
-                            map[target.y][target.x] = tileType;
-                            moveToTarget(movePoint, 756);
-                        }
-                        buildStep++;
+                    if (target.x >= 0 && target.y >= 0 && target.x < maxWidth && target.y < maxHeight) {
+                        Point movePoint = new Point(target.x, target.y + 1);
+                        map[target.y][target.x] = tileType;
+                        moveToTarget(movePoint, 756);
                     }
+                    buildStep++;
                 }
             } else {
                 this.task = "wander";
                 path = null;
-                areWeThereYet = false;
                 this.stone -= requiredStone;
                 this.wood -= requiredWood;
                 this.buildStep = 0;
@@ -181,31 +167,36 @@ public class Npc {
                 this.task = "wander";
                 path = null;
             }
-        }
-    }
+        } else if (this.task.equals("explore")) {
+            if (path == null) {
+                Random rand = new Random();
+                Point target = null;
 
-    private Point findOpenAreaForBlueprint(List<Map.Entry<Point, Integer>> blueprint) {
-        for (int y = 0; y < maxHeight; y++) {
-            for (int x = 0; x < maxWidth; x++) {
-                boolean fits = true;
-                for (Map.Entry<Point, Integer> entry : blueprint) {
-                    Point relativePoint = entry.getKey();
-                    int targetX = x + relativePoint.x;
-                    int targetY = y + relativePoint.y;
+                for (int attempts = 0; attempts < 100; attempts++) {
+                    int targetX = rand.nextInt(maxWidth);
+                    int targetY = rand.nextInt(maxHeight);
 
-                    if (targetX < 0 || targetY < 0 || targetX >= maxWidth || targetY >= maxHeight || map[targetY][targetX] == 7 || map[targetY][targetX] == 8 || map[targetY][targetX] == 9 || map[targetY][targetX] == 10 || map[targetY][targetX] == 5) {
-                        fits = false;
+                    if (targetX >= 0 && targetY >= 0 && targetX < maxWidth && targetY < maxHeight && map[targetY][targetX] == 0) {
+                        target = new Point(targetX, targetY);
                         break;
                     }
                 }
-                if (fits) {
-                    return new Point(x, y);
+
+                if (target != null) {
+                    path = aStarPathfinding(new Point(xpos, ypos), target, 0);
+                } else {
+                    System.out.println("No valid explore target found.");
                 }
             }
-        }
-        return null;
-    }
 
+            if (path != null && !path.isEmpty()) {
+                Point nextStep = path.remove(0);
+                moveToTarget(nextStep, 0);
+            } else {
+                this.task = "build";
+            }
+        }
+    }
     private List<Entry<Point, Integer>> loadBlueprintFromCsv(String filePath) {
         List<Entry<Point, Integer>> blueprint = new ArrayList<>();
         File file = null;
