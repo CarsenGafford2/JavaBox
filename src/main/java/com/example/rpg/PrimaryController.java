@@ -213,7 +213,7 @@ public class PrimaryController {
                 }
                 renderMap();
             }
-        }, 0, 200);
+        }, 0, 500);
 
         gridPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {

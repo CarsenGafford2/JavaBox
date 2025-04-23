@@ -45,7 +45,7 @@ public class Npc {
         this.maxHeight = map.length;
         this.maxWidth = map[0].length;
         this.map = map;
-        this.task = "explore";
+        this.task = "build";
 
         Random rand = new Random();
         this.whichBuilding = rand.nextInt(2);
