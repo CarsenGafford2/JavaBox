@@ -18,10 +18,10 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        primaryScene = new Scene(loadFXML("primary"), 490, 490);
+        primaryScene = new Scene(loadFXML("primary"), 500, 500);
         primaryStage.setScene(primaryScene);
         primaryStage.requestFocus();
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
         primaryStage.setTitle("Game");
         primaryStage.getIcons().add(new Image(getClass().getResource("res/npc/guy0.png").toString()));
         primaryStage.show();

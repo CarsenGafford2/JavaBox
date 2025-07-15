@@ -14,18 +14,24 @@ import javax.imageio.ImageIO;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 public class PrimaryController {
+
+    private static final int TILE_SIZE = 50;
+
     @FXML
-    private GridPane gridPane;
+    private Canvas canvas;
 
     private int[][] map;
     private int[][] cleanMap;
@@ -93,6 +99,8 @@ public class PrimaryController {
         System.out.print("\033[H\033[2J");  
         int mapWidth = 500;
         int mapHeight = 500;
+
+        setupCanvasMouseEvents();
 
         cleanMap = new int[mapHeight][mapWidth];
 
@@ -168,8 +176,8 @@ public class PrimaryController {
         } catch (Exception e) {
             System.err.println(e);
         }
-        gridPane.setFocusTraversable(true);
-        gridPane.requestFocus();
+        canvas.setFocusTraversable(true);
+        canvas.requestFocus();
 
         Timer t = new Timer();
 
@@ -215,7 +223,7 @@ public class PrimaryController {
             }
         }, 0, 500);
 
-        gridPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
+        canvas.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.setOnKeyPressed(event -> {
                     if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.W) {
@@ -252,6 +260,51 @@ public class PrimaryController {
 
         renderMap();
         }
+
+        private void setupCanvasMouseEvents() {
+            canvas.setOnMouseClicked(event -> {
+                int col = (int)(event.getX() / TILE_SIZE);
+                int row = (int)(event.getY() / TILE_SIZE);
+
+                int mapRow = y + row;
+                int mapCol = x + col;
+
+                if (mapRow >= map.length || mapCol >= map[0].length) return;
+
+                switch (numberKeypressed) {
+                    case 0:
+                        spawnNpc(mapRow, mapCol);
+                        break;
+                    case 1:
+                        spawnMob(mapRow, mapCol);
+                        break;
+                    case 2:
+                        map[mapRow][mapCol] = 1;
+                        break;
+                    case 3:
+                        map[mapRow][mapCol] = 3;
+                        break;
+                    case 4:
+                        map[mapRow][mapCol] = 5;
+                        break;
+                    case 5:
+                        map[mapRow][mapCol] = 6;
+                        break;
+                    case 6:
+                        map[mapRow][mapCol] = 7;
+                        break;
+                    case 7:
+                        map[mapRow][mapCol] = 8;
+                        break;
+                    case 78:
+                        map[mapRow][mapCol] = 0;
+                        break;
+                }
+
+                renderMap();
+            });
+        }
+
 
 
         private int[][] generateMap(int width, int height) {
@@ -390,7 +443,8 @@ public class PrimaryController {
 
     private void renderMap() {
         Platform.runLater(() -> {
-            gridPane.getChildren().clear();
+            GraphicsContext gc = canvas.getGraphicsContext2D();
+            gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
             for (int row = 0; row < 10; row++) {
                 for (int col = 0; col < 10; col++) {
@@ -401,114 +455,83 @@ public class PrimaryController {
                         continue;
                     }
 
-                    Image image = grassImg;
-                    if (map[mapRow][mapCol] == 0) { // Grass
-                        image = grassImg;
-                    } else if (map[mapRow][mapCol] == 1) { // Stone
-                        image = rockImg;
-                    } else if (map[mapRow][mapCol] == 2) { // Npc
-                        for (Npc guy : npcList) {
-                            if (guy.getxPos() == mapCol && guy.getyPos() == mapRow) {
-                                image = guy.getImage();
-                            }
-                        }
-                    } else if (map[mapRow][mapCol] == 3) { // Tree
-                        image = treeImage;
-                    } else if (map[mapRow][mapCol] == 4) { // Mob
-                        for (mob guy : mobList) {
-                            if (guy.getxPos() == mapCol && guy.getyPos() == mapRow) {
-                                image = guy.getImage();
-                            }
-                        }
-                    } else if (map[mapRow][mapCol] == 5) { // Water
-                        image = waterImage;
-                    } else if (map[mapRow][mapCol] == 6) { // Sand
-                        image = sandImage;
-                    } else if (map[mapRow][mapCol] == 7) { // Brick
-                        image = brickImage;
-                    } else if (map[mapRow][mapCol] == 8) { // Wood
-                        image = woodImage;
-                    } else if (map[mapRow][mapCol] == 9) { // bedTop
-                        image = bedTopImage;
-                    } else if (map[mapRow][mapCol] == 10) { // bedBottom
-                        image = bedBottomImage;
-                    } else if (map[mapRow][mapCol] == 11) { // nightstand
-                        image = nightstandImage;
-                    } else if (map[mapRow][mapCol] == 12) { // door
-                        image = doorImage;
-                    } else if (map[mapRow][mapCol] == 13) { // chair
-                        image = chairImage;
-                    } else if (map[mapRow][mapCol] == 14) { // tableBleft
-                        image = tableBleftImage;
-                    } else if (map[mapRow][mapCol] == 15) { // tableBright
-                        image = tableBrightImage;
-                    } else if (map[mapRow][mapCol] == 16) { // tableTright
-                        image = tableTrightImage;
-                    } else if (map[mapRow][mapCol] == 17) { // tableTleft
-                        image = tableTleftImage;
+                    Image image;
+                    switch (map[mapRow][mapCol]) {
+                        case 0:
+                            image = grassImg;
+                            break;
+                        case 1:
+                            image = rockImg;
+                            break;
+                        case 3:
+                            image = treeImage;
+                            break;
+                        case 5:
+                            image = waterImage;
+                            break;
+                        case 6:
+                            image = sandImage;
+                            break;
+                        case 7:
+                            image = brickImage;
+                            break;
+                        case 8:
+                            image = woodImage;
+                            break;
+                        case 9:
+                            image = bedTopImage;
+                            break;
+                        case 10:
+                            image = bedBottomImage;
+                            break;
+                        case 11:
+                            image = nightstandImage;
+                            break;
+                        case 12:
+                            image = doorImage;
+                            break;
+                        case 13:
+                            image = chairImage;
+                            break;
+                        case 14:
+                            image = tableBleftImage;
+                            break;
+                        case 15:
+                            image = tableBrightImage;
+                            break;
+                        case 16:
+                            image = tableTrightImage;
+                            break;
+                        case 17:
+                            image = tableTleftImage;
+                            break;
+                        default:
+                            image = grassImg;
+                            break;
                     }
-                    ImageView imageView = new ImageView(image);
-                    imageView.setFitWidth(50);
-                    imageView.setFitHeight(50);
-                    imageView.setPreserveRatio(true);
 
+                    // NPC check
                     if (map[mapRow][mapCol] == 2) {
-                        Tooltip t = new Tooltip("Error");
                         for (Npc guy : npcList) {
                             if (guy.getxPos() == mapCol && guy.getyPos() == mapRow) {
-                                t = new Tooltip(guy.getName() + "\n" + "Current Task: " + guy.getTask() + "\n" + "Stone: " + guy.getStone() + "\n" + "Wood: " + guy.getWood() + "\n" + "Traits:" + guy.getTraits());
+                                image = guy.getImage();
+                                break;
                             }
                         }
-                        t.setShowDelay(javafx.util.Duration.ZERO);
-                        Tooltip.install(imageView, t);
                     }
+
+                    // Mob check
                     if (map[mapRow][mapCol] == 4) {
-                        Tooltip t = new Tooltip("Error");
                         for (mob guy : mobList) {
                             if (guy.getxPos() == mapCol && guy.getyPos() == mapRow) {
-                                t = new Tooltip(guy.getName());
+                                image = guy.getImage();
+                                break;
                             }
                         }
-                        t.setShowDelay(javafx.util.Duration.ZERO);
-                        Tooltip.install(imageView, t);
                     }
 
-                    int clickedRow = mapRow;
-                    int clickedCol = mapCol;
-                    imageView.setOnMouseClicked(event -> {
-                        if (numberKeypressed == 0) {
-                            spawnNpc(clickedRow, clickedCol);
-                            // console.getInstance().log(npcList.get(npcList.size() - 1).getName() + " Spawned");
-                            renderMap();
-                        } else if (numberKeypressed == 1) {
-                            spawnMob(clickedRow, clickedCol);
-                            // console.getInstance().log("Mob Spawned: " + mobList.get(mobList.size() - 1).getName());
-                            renderMap();
-                        } else if (numberKeypressed == 2) {
-                            map[clickedRow][clickedCol] = 1;
-                            renderMap();
-                        } else if (numberKeypressed == 3) {
-                            map[clickedRow][clickedCol] = 3;
-                            renderMap();
-                        } else if (numberKeypressed == 4) {
-                            map[clickedRow][clickedCol] = 5;
-                            renderMap();
-                        } else if (numberKeypressed == 5) {
-                            map[clickedRow][clickedCol] = 6;
-                            renderMap();
-                        } else if (numberKeypressed == 6) {
-                            map[clickedRow][clickedCol] = 7;
-                            renderMap();
-                        } else if (numberKeypressed == 7) {
-                            map[clickedRow][clickedCol] = 8;
-                            renderMap();
-                        } else if (numberKeypressed == 78) {
-                            map[clickedRow][clickedCol] = 0;
-                            renderMap();
-                        }
-                    });
-
-                    gridPane.add(imageView, col, row);
+                    // Draw image
+                    gc.drawImage(image, col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 }
             }
         });
