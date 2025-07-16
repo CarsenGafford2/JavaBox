@@ -467,10 +467,15 @@ public class PrimaryController {
                         generatedMap[y][x] = 6; // Sand (6)
                     } else if (value < 0.1) {
                             generatedMap[y][x] = 0; // Tree (3)
-                    } else if (value < 0.2) {
-                        generatedMap[y][x] = 1; // Stone (1)
                     } else {
                         generatedMap[y][x] = 3; // Grass (0)
+                    }
+                }
+                for (int i = 0; i < 35; i++) {
+                    int x = rand.nextInt(width);
+                    int b = rand.nextInt(height);
+                    if (generatedMap[b][x] == 0) {
+                        generatedMap[b][x] = 1; // Rock (1)
                     }
                 }
             }
