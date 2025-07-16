@@ -8,6 +8,14 @@ import java.net.URISyntaxException;
 
 import javafx.scene.image.Image;
 
+/**
+ * Represents a human NPC in the simulation.
+ * The NPC can perform various tasks such as wandering, gathering resources, and building structures.
+ * Needs a class system, complex interactions, jobs, so on and so forth.
+ * 
+ * @author Carsen Gafford
+ * @version alpha v0.1.11
+ */
 public class Npc {
 
     private int xpos;
@@ -55,6 +63,11 @@ public class Npc {
         this.img = rightImage;
     }
 
+    /*
+     * Move the NPC based on its current task.
+     * The NPC can wander, gather stone, gather wood, build structures, hunt, or explore.
+     * The movement is determined using A* pathfinding to navigate the map.
+     */
     public void move() {
         if (this.task.equals("wander")) {
             if (path == null) {

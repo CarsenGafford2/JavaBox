@@ -1,17 +1,14 @@
 package com.example.rpg;
 
+/*
+ * Import statements
+ */
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
-
+import java.util.*;
 import javax.imageio.ImageIO;
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -19,29 +16,57 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
-
-
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
+/**
+ * Primary Controller is the main class and handles everything from map generation to rendering to NPC and mob management.
+ * It uses JavaFX canvas for rendering and OpenSimplex2S for procedural map generation.
+ * The class also supports modding by allowing custom textures to be loaded from a "mods" folder.
+ * 
+ * @author Carsen Gafford
+ * @version alpha v0.2.0
+ */
 public class PrimaryController {
 
+    /*
+     * This is just basic initialization for the size of tiles and the amount that are rendered at once.
+     * You can change these values to adjust the zoom level and how much of the map is visible.
+     * The player has the option to change the zoom level with the + and - keys.
+     */
     private int TILE_SIZE = 50;
     private int TILES_TO_RENDER = 11;
 
+    /*
+     * FXML Canvas for rendering the game.
+     */
     @FXML
     private Canvas canvas;
 
+    /*
+     * Arrays for holding both the map and the clean map (without NPCs or mobs).
+     */
     private int[][] map;
     private int[][] cleanMap;
+
+    /*
+     * Stores camera positioning.
+     */
     private double cameraX = 0;
     private double cameraY = 0;
+
+    /*
+     * Variables for handling NPC and mob spawning and movement.
+     */
     private int percent = 0;
     private int numberKeypressed = 0;
     private double moveSpeed = 0.1;
     private boolean upPressed, downPressed, leftPressed, rightPressed;
 
-
+    /*
+     * Texture paths, checking for modded textures first, then defaulting to built-in textures.
+     * Needs to be probably re-worked and moved into its own class at some point.
+     */
     private String grass = checkForModTexture("mods/textures/grass.png", "res/textures/grass.png");
     private String rock = checkForModTexture("mods/textures/rock.png", "res/textures/rock.png");
     private String tree = checkForModTexture("mods/textures/tree.png", "res/textures/tree.png");
@@ -59,6 +84,13 @@ public class PrimaryController {
     private String tableTright = checkForModTexture("mods/textures/tableTright.png", "res/textures/tableTright.png");
     private String tableTleft = checkForModTexture("mods/textures/tableTleft.png", "res/textures/tableTleft.png");
 
+    /**
+     * Checks for a modded texture first, if not found, defaults to the built-in texture.
+     * @param modPath The path to the modded texture. (needs to be re programmed for different named folders)
+     * @param defaultPath The path to the default texture.
+     * @return The path to the texture to be used.
+     * @throws IllegalArgumentException if neither texture is found.
+     */
     private String checkForModTexture(String modPath, String defaultPath) {
         boolean mod = false;
         if (getClass().getResource(modPath) != null && mod) {
@@ -72,7 +104,9 @@ public class PrimaryController {
         }
     }
 
-
+    /*
+     * Image objects for each texture, loaded from the paths defined above. (could also be re-worked to be more efficient)
+     */
     private Image grassImg = new Image(grass);
     private Image rockImg = new Image(rock);
     private Image treeImage = new Image(tree);
@@ -90,6 +124,10 @@ public class PrimaryController {
     private Image tableTrightImage = new Image(tableTright);
     private Image tableTleftImage = new Image(tableTleft);
 
+    /*
+     * Lists for managing NPCs, mobs, and names.
+     * Will need to be re-worked for having additional names and lists in an efficient manner.
+     */
     private ArrayList<Npc> npcList = new ArrayList<>();
     private ArrayList<mob> mobList = new ArrayList<>();
     private ArrayList<String> names = new ArrayList<>();
@@ -97,11 +135,18 @@ public class PrimaryController {
     private ArrayList<String> sheepNames = new ArrayList<>();
     private ArrayList<String> chickenNames = new ArrayList<>();
 
+    /**
+     * Initializes the game, generates the map, loads names, spawns NPCs and mobs, and sets up rendering and input handling.
+     * This method is called automatically after the FXML elements have been loaded.
+     */
     public void initialize() {
-        System.out.print("\033[H\033[2J");  
+        // Clear console
+        System.out.print("\033[H\033[2J");
+        // Default map size, will be changed later to be dynamic.
         int mapWidth = 500;
         int mapHeight = 500;
 
+        // Set up mouse events for the canvas
         setupCanvasMouseEvents();
 
         cleanMap = new int[mapHeight][mapWidth];
@@ -112,9 +157,14 @@ public class PrimaryController {
                 cleanMap[i][j] = map[i][j];
             }
         }
+        //saves the map in an image, for debugging and also for fun :D
         saveMapAsImage("map.png");
 
 
+        /*
+         * Load names from resources (names.txt, cowNames.txt, sheepNames.txt, chickenNames.txt).
+         * Needs to be its own method, this is really messy and inefficient.
+         */
         File file = new File("");
         try {
             file = new File(getClass().getResource("names/names.txt").toURI());
@@ -183,7 +233,7 @@ public class PrimaryController {
 
         Timer t = new Timer();
 
-
+        // Spawn Mobs, this is very resource intensive, needs to be re-worked.
         Random r = new Random();
         System.out.print("\033[H\033[2J");
         int i = 1000;
@@ -197,6 +247,10 @@ public class PrimaryController {
             percent = (index * 100) / i;
         }
 
+        /*
+         * Timer task for moving NPCs and mobs every 500 milliseconds.
+         * needs to be adapted to allow user control of time flow.
+         */
         t.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -225,6 +279,7 @@ public class PrimaryController {
             }
         }, 0, 500);
 
+        // Handle key presses for movement and other actions.
         canvas.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.setOnKeyPressed(event -> {
@@ -258,6 +313,9 @@ public class PrimaryController {
         renderMap();
         }
 
+        /**
+         * Sets up mouse click events on the canvas for spawning NPCs, mobs, and changing terrain based on the number key pressed.
+         */
         private void setupCanvasMouseEvents() {
             canvas.setOnMouseClicked(event -> {
                 int col = (int)(event.getX() / TILE_SIZE);
@@ -302,8 +360,12 @@ public class PrimaryController {
             });
         }
 
-
-
+        /**
+         * Generates a procedural map using OpenSimplex2S noise.
+         * @param width The width of the map.
+         * @param height The height of the map.
+         * @return A 2D array representing the generated map.
+         */
         private int[][] generateMap(int width, int height) {
             int[][] generatedMap = new int[height][width];
             Random rand = new Random();
@@ -316,6 +378,7 @@ public class PrimaryController {
                 for (int x = 0; x < width; x++) {
                     double value = OpenSimplex2S.noise2(seed, x * 0.05, y * 0.05);
                     
+                    //reference codex doc for better labeled values
                     if (value < -0.6) {
                         generatedMap[y][x] = 5; // Water (5)
                     } else if (value < -0.5) {
@@ -333,6 +396,10 @@ public class PrimaryController {
             return generatedMap;
         }       
         
+        /**
+         * Saves the current map as a PNG image for debugging and visualization purposes.
+         * @param fileName The name of the file to save the image as.
+         */
         public void saveMapAsImage(String fileName) {
             int cellSize = 1;
             int imageWidth = map[0].length * cellSize;
@@ -385,6 +452,7 @@ public class PrimaryController {
                 e.printStackTrace();
             }
 
+            // Animation timer for smooth camera movement
             AnimationTimer timer = new AnimationTimer() {
                 private long lastUpdate = 0;
 
@@ -424,6 +492,11 @@ public class PrimaryController {
 
         }
 
+    /**
+     * Spawns an NPC at the specified coordinates if the names list is not empty.
+     * @param x xpos to spawn at
+     * @param y ypos to spawn at
+     */
     private void spawnNpc(int x, int y) {
         Random rand = new Random();
         if (!names.isEmpty()) {
@@ -472,10 +545,18 @@ public class PrimaryController {
         }
     }
 
+    /**
+     * Draws a mob on the map at its current position.
+     * @param guy The mob to be drawn.
+     */
     private void drawMob(mob guy) {
         map[guy.getyPos()][guy.getxPos()] = 4;
     }
 
+    /**
+     * Renders the visible portion of the map on the canvas based on the camera position.
+     * This method is called whenever the map needs to be redrawn, such as after movement or spawning entities.
+     */
     private void renderMap() {
         Platform.runLater(() -> {
             GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -491,6 +572,7 @@ public class PrimaryController {
                     }
 
                     Image image;
+                    // Once again, reference codex doc for better labeled values
                     switch (map[mapRow][mapCol]) {
                         case 0:
                             image = grassImg;
