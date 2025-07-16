@@ -3,6 +3,14 @@ import java.util.*;
 
 import javafx.scene.image.Image;
 
+/**
+ * Class representing a mobile entity (mob) in the RPG game.
+ * Handles movement, image loading, and interaction with the game map.
+ * Similar to NPC but with random movement and simpler logic.
+ * 
+ * @author Carsen Gafford
+ * @version alpha v0.2.2
+ */
 public class mob {
 
     private int xpos;
@@ -37,6 +45,13 @@ public class mob {
         this.img = rightImage;
     }
 
+    /**
+     * Check for a texture in the mod directory first, then load from default if not found.
+     * @param modPath the path to the mod texture
+     * @param defaultPath the path to the default texture
+     * @return the URL of the loaded texture
+     * @throws IllegalArgumentException if neither texture is found
+     */
     private String checkAndLoadTexture(String modPath, String defaultPath) {
         boolean mod = false;
         if (getClass().getResource(modPath) != null && mod) {
@@ -50,6 +65,10 @@ public class mob {
         }
     }
 
+    /**
+     * Move the mob randomly on the map, avoiding obstacles.
+     * The mob can move up, down, left, or right if the target cell is walkable.
+     */
     public void move() {
         Random rand = new Random();
         int temp = rand.nextInt(4);
@@ -70,11 +89,20 @@ public class mob {
         }
     }
 
-
+    /**
+     * Getters for mob properties.
+     * @return the respective property value
+     */
     public int getxPos() { return xpos; }
     public int getyPos() { return ypos; }
     public String getName() { return name; }
     public Image getImage() { return img; }
+
+    /**
+     * Check if the mob is adjacent to a human
+     * meant to check if the mob is being hunted, really bad system, needs to be re-worked entirely.
+     * @return true if adjacent to a human tile, false otherwise
+     */
     public boolean isHunted() {
         if ((ypos + 1 < maxHeight && map[ypos + 1][xpos] == 2) ||
             (ypos - 1 >= 0 && map[ypos - 1][xpos] == 2) ||

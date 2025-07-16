@@ -210,6 +210,11 @@ public class Npc {
             }
         }
     }
+    /**
+     * Load building blueprint from a CSV file.
+     * @param filePath the path to the CSV file
+     * @return a list of map entries containing points and tile types
+     */
     private List<Entry<Point, Integer>> loadBlueprintFromCsv(String filePath) {
         List<Entry<Point, Integer>> blueprint = new ArrayList<>();
         File file = null;
@@ -242,6 +247,11 @@ public class Npc {
         return blueprint;
     }
 
+    /**
+     * Find the nearest tile of a specific type using BFS.
+     * @param targetType the type of tile to find
+     * @return the point of the nearest tile, or null if not found
+     */
     private Point findNearestTile(int targetType) {
         if (targetType == -1) {
             this.task = "wander";
@@ -278,6 +288,11 @@ public class Npc {
         return null;
     }
 
+    /**
+     * Move the NPC towards a target point using A* pathfinding.
+     * @param target the target point to move towards
+     * @param specialWalkable a special tile type that the NPC can walk on
+     */
     private void moveToTarget(Point target, int specialWalkable) {
         if (target == null) return;
 
@@ -318,6 +333,13 @@ public class Npc {
         }
     }
 
+    /**
+     * A* pathfinding algorithm to find a path from start to goal.
+     * @param start the starting point
+     * @param goal the goal point
+     * @param specialWalkable a special tile type that the NPC can walk on
+     * @return a list of points representing the path, or null if no path found
+     */
     private List<Point> aStarPathfinding(Point start, Point goal, int specialWalkable) {
         PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingInt(n -> n.cost + n.heuristic));
         Map<Point, Point> cameFrom = new HashMap<>();
@@ -351,6 +373,12 @@ public class Npc {
         return null;
     }
 
+    /**
+     * Reconstruct the path from the cameFrom map.
+     * @param cameFrom the map of points and their predecessors
+     * @param current the current point
+     * @return the reconstructed path as a list of points
+     */
     private List<Point> reconstructPath(Map<Point, Point> cameFrom, Point current) {
         List<Point> path = new ArrayList<>();
         while (cameFrom.containsKey(current)) {
@@ -360,10 +388,20 @@ public class Npc {
         return path;
     }
 
+    /**
+     * Heuristic function for A* pathfinding (Manhattan distance).
+     * @param a the first point
+     * @param b the second point
+     * @return the heuristic cost between the two points
+     */
     private int heuristic(Point a, Point b) {
         return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); // Manhattan distance
     }
 
+    /**
+     * Node class for A* pathfinding.
+     * Contains coordinates, cost from start, and heuristic cost to goal.
+     */
     private static class Node {
         int x, y, cost, heuristic;
 
@@ -379,7 +417,10 @@ public class Npc {
         }
     }
 
-
+    /**
+     * Getters for NPC properties.
+     * @return the respective property value
+     */
     public int getxPos() {
         return xpos;
     }

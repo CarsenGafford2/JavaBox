@@ -6,16 +6,18 @@ package com.example.rpg;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.*;
 import javax.imageio.ImageIO;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
@@ -32,7 +34,7 @@ public class PrimaryController {
     /*
      * This is just basic initialization for the size of tiles and the amount that are rendered at once.
      * You can change these values to adjust the zoom level and how much of the map is visible.
-     * The player has the option to change the zoom level with the + and - keys.
+     * The player has the option to change the zoom level with the + and - keys or the scroll wheel.
      */
     private int TILE_SIZE = 50;
     private int TILES_TO_RENDER = 11;
@@ -148,6 +150,7 @@ public class PrimaryController {
 
         // Set up mouse events for the canvas
         setupCanvasMouseEvents();
+        addMouseHoverHandler();
 
         cleanMap = new int[mapHeight][mapWidth];
 
@@ -296,7 +299,17 @@ public class PrimaryController {
                     if (event.getCode() == KeyCode.MINUS) {
                         TILE_SIZE = Math.max(5, TILE_SIZE - 5);
                         TILES_TO_RENDER = 700 / TILE_SIZE;
+                        renderMap();
                     }
+                    canvas.setOnScroll(scrollEvent -> {
+                        if (scrollEvent.getDeltaY() > 0) {
+                            TILE_SIZE = Math.min(100, TILE_SIZE + 2);
+                        } else if (scrollEvent.getDeltaY() < 0) {
+                            TILE_SIZE = Math.max(5, TILE_SIZE - 2);
+                        }
+                        TILES_TO_RENDER = 700 / TILE_SIZE;
+                        renderMap();
+                    });
                 });
 
                 newScene.setOnKeyReleased(event -> {
@@ -314,45 +327,114 @@ public class PrimaryController {
         }
 
         /**
+         * Sets up mouse hover events on the canvas to display NPC names and info when hovered over.
+         */
+        private void addMouseHoverHandler() {
+            canvas.setOnMouseMoved((MouseEvent event) -> {
+                double mouseX = event.getX();
+                double mouseY = event.getY();
+
+                int tileX = (int) (mouseX / TILE_SIZE + cameraX);
+                int tileY = (int) (mouseY / TILE_SIZE + cameraY);
+
+                if (tileX >= 0 && tileX < map[0].length && tileY >= 0 && tileY < map.length) {
+                    for (Npc npc : npcList) {
+                        if (npc.getxPos() == tileX && npc.getyPos() == tileY) {
+                            showNpcTooltip(npc, event);
+                            return;
+                        }
+                    }
+                    for (mob mob : mobList) {
+                        if (mob.getxPos() == tileX && mob.getyPos() == tileY) {
+                            showMobTooltip(mob, event);
+                            return;
+                        }
+                    }
+                }
+                
+                hideTooltip();
+            });
+        }
+
+        private Tooltip currentTooltip = null;
+
+        /**
+         * Displays a tooltip with the NPC's name when hovered over.
+         * @param npc The NPC being hovered over.
+         * @param event The mouse event triggering the tooltip.
+         */
+        private void showNpcTooltip(Npc npc, MouseEvent event) {
+            if (currentTooltip == null) {
+                currentTooltip = new Tooltip();
+                Tooltip.install(canvas, currentTooltip);
+            }
+            currentTooltip.setText(npc.getName());
+
+            currentTooltip.show(canvas, event.getScreenX(), event.getScreenY());
+            canvas.setCursor(Cursor.HAND);
+        }
+
+        private void showMobTooltip(mob mob, MouseEvent event) {
+            if (currentTooltip == null) {
+                currentTooltip = new Tooltip();
+                Tooltip.install(canvas, currentTooltip);
+            }
+            currentTooltip.setText(mob.getName());
+
+            currentTooltip.show(canvas, event.getScreenX(), event.getScreenY());
+            canvas.setCursor(Cursor.HAND);
+        }
+
+        /**
+         * Hides the currently displayed tooltip, if any.
+         */
+        private void hideTooltip() {
+            if (currentTooltip != null && currentTooltip.isShowing()) {
+                currentTooltip.hide();
+            }
+            canvas.setCursor(Cursor.DEFAULT);
+        }
+
+        /**
          * Sets up mouse click events on the canvas for spawning NPCs, mobs, and changing terrain based on the number key pressed.
          */
         private void setupCanvasMouseEvents() {
             canvas.setOnMouseClicked(event -> {
-                int col = (int)(event.getX() / TILE_SIZE);
-                int row = (int)(event.getY() / TILE_SIZE);
+                // Adjust for camera offset and zoom
+                double mouseX = event.getX();
+                double mouseY = event.getY();
+                int col = (int) (mouseX / TILE_SIZE + cameraX);
+                int row = (int) (mouseY / TILE_SIZE + cameraY);
 
-                int mapRow = (int)(cameraY + row);
-                int mapCol = (int)(cameraX + col);
-
-                if (mapRow >= map.length || mapCol >= map[0].length) return;
+                if (row < 0 || col < 0 || row >= map.length || col >= map[0].length) return;
 
                 switch (numberKeypressed) {
                     case 0:
-                        spawnNpc(mapRow, mapCol);
+                        spawnNpc(row, col);
                         break;
                     case 1:
-                        spawnMob(mapRow, mapCol);
+                        spawnMob(row, col);
                         break;
                     case 2:
-                        map[mapRow][mapCol] = 1;
+                        map[row][col] = 1;
                         break;
                     case 3:
-                        map[mapRow][mapCol] = 3;
+                        map[row][col] = 3;
                         break;
                     case 4:
-                        map[mapRow][mapCol] = 5;
+                        map[row][col] = 5;
                         break;
                     case 5:
-                        map[mapRow][mapCol] = 6;
+                        map[row][col] = 6;
                         break;
                     case 6:
-                        map[mapRow][mapCol] = 7;
+                        map[row][col] = 7;
                         break;
                     case 7:
-                        map[mapRow][mapCol] = 8;
+                        map[row][col] = 8;
                         break;
                     case 78:
-                        map[mapRow][mapCol] = 0;
+                        map[row][col] = 0;
                         break;
                 }
 
