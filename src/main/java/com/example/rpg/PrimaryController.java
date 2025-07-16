@@ -12,33 +12,35 @@ import java.util.TimerTask;
 
 import javax.imageio.ImageIO;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
+
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 public class PrimaryController {
 
-    private static final int TILE_SIZE = 50;
+    private int TILE_SIZE = 50;
+    private int TILES_TO_RENDER = 11;
 
     @FXML
     private Canvas canvas;
 
     private int[][] map;
     private int[][] cleanMap;
-    private int x = 0;
-    private int y = 0;
+    private double cameraX = 0;
+    private double cameraY = 0;
     private int percent = 0;
     private int numberKeypressed = 0;
+    private double moveSpeed = 0.1;
+    private boolean upPressed, downPressed, leftPressed, rightPressed;
+
 
     private String grass = checkForModTexture("mods/textures/grass.png", "res/textures/grass.png");
     private String rock = checkForModTexture("mods/textures/rock.png", "res/textures/rock.png");
@@ -226,35 +228,30 @@ public class PrimaryController {
         canvas.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.setOnKeyPressed(event -> {
-                    if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.W) {
-                        y = Math.max(0, y - 1);
-                    } else if (event.getCode() == KeyCode.DOWN || event.getCode() == KeyCode.S) {
-                        y = Math.min(map.length - 10, y + 1);
-                    } else if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.A) {
-                        x = Math.max(0, x - 1);
-                    } else if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.D) {
-                        x = Math.min(map[0].length - 10, x + 1);
-                    } else if (event.getCode() == KeyCode.DIGIT1) {
-                        numberKeypressed = 0;
-                    } else if (event.getCode() == KeyCode.DIGIT2) {
-                        numberKeypressed = 1;
-                    } else if (event.getCode() == KeyCode.DIGIT3) {
-                        numberKeypressed = 2;
-                    } else if (event.getCode() == KeyCode.DIGIT4) {
-                        numberKeypressed = 3;
-                    } else if (event.getCode() == KeyCode.DIGIT5) {
-                        numberKeypressed = 4;
-                    } else if (event.getCode() == KeyCode.DIGIT6) {
-                        numberKeypressed = 5;
-                    } else if (event.getCode() == KeyCode.DIGIT7) {
-                        numberKeypressed = 6;
-                    } else if (event.getCode() == KeyCode.DIGIT8) {
-                        numberKeypressed = 7;
-                    } else if (event.getCode() == KeyCode.DIGIT0) {
-                        numberKeypressed = 78;
+                    if (event.getCode() == KeyCode.W || event.getCode() == KeyCode.UP) upPressed = true;
+                    if (event.getCode() == KeyCode.S || event.getCode() == KeyCode.DOWN) downPressed = true;
+                    if (event.getCode() == KeyCode.A || event.getCode() == KeyCode.LEFT) leftPressed = true;
+                    if (event.getCode() == KeyCode.D || event.getCode() == KeyCode.RIGHT) rightPressed = true;
+                    if (event.getCode() == KeyCode.SHIFT) moveSpeed = 0.3;
+                    if (event.getCode() == KeyCode.EQUALS) {
+                        TILE_SIZE = Math.min(100, TILE_SIZE + 5);
+                        TILES_TO_RENDER = 700 / TILE_SIZE;
+                        renderMap();
                     }
-                    renderMap();
+                    if (event.getCode() == KeyCode.MINUS) {
+                        TILE_SIZE = Math.max(5, TILE_SIZE - 5);
+                        TILES_TO_RENDER = 700 / TILE_SIZE;
+                    }
                 });
+
+                newScene.setOnKeyReleased(event -> {
+                    if (event.getCode() == KeyCode.W || event.getCode() == KeyCode.UP) upPressed = false;
+                    if (event.getCode() == KeyCode.S || event.getCode() == KeyCode.DOWN) downPressed = false;
+                    if (event.getCode() == KeyCode.A || event.getCode() == KeyCode.LEFT) leftPressed = false;
+                    if (event.getCode() == KeyCode.D || event.getCode() == KeyCode.RIGHT) rightPressed = false;
+                    if (event.getCode() == KeyCode.SHIFT) moveSpeed = 0.1;
+                });
+
             }
         });
 
@@ -266,8 +263,8 @@ public class PrimaryController {
                 int col = (int)(event.getX() / TILE_SIZE);
                 int row = (int)(event.getY() / TILE_SIZE);
 
-                int mapRow = y + row;
-                int mapCol = x + col;
+                int mapRow = (int)(cameraY + row);
+                int mapCol = (int)(cameraX + col);
 
                 if (mapRow >= map.length || mapCol >= map[0].length) return;
 
@@ -387,6 +384,44 @@ public class PrimaryController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            AnimationTimer timer = new AnimationTimer() {
+                private long lastUpdate = 0;
+
+                @Override
+                public void handle(long now) {
+                    if (lastUpdate == 0) {
+                        lastUpdate = now;
+                        return;
+                    }
+                    double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
+                    lastUpdate = now;
+
+                    double speed = moveSpeed * deltaTime * 60; // scale to 60 FPS
+
+                    boolean moved = false;
+                    if (upPressed) {
+                        cameraY = Math.max(0, cameraY - speed);
+                        moved = true;
+                    }
+                    if (downPressed) {
+                        cameraY = Math.min(map.length - 10, cameraY + speed);
+                        moved = true;
+                    }
+                    if (leftPressed) {
+                        cameraX = Math.max(0, cameraX - speed);
+                        moved = true;
+                    }
+                    if (rightPressed) {
+                        cameraX = Math.min(map[0].length - 10, cameraX + speed);
+                        moved = true;
+                    }
+
+                    if (moved) renderMap();
+                }
+            };
+            timer.start();
+
         }
 
     private void spawnNpc(int x, int y) {
@@ -446,12 +481,12 @@ public class PrimaryController {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-            for (int row = 0; row < 10; row++) {
-                for (int col = 0; col < 10; col++) {
-                    int mapRow = y + row;
-                    int mapCol = x + col;
+            for (int row = 0; row < TILES_TO_RENDER; row++) {
+                for (int col = 0; col < TILES_TO_RENDER; col++) {
+                    int mapRow = (int)(cameraY + row);
+                    int mapCol = (int)(cameraX + col);
 
-                    if (mapRow >= map.length || mapCol >= map[0].length) {
+                    if (mapRow < 0 || mapCol < 0 || mapRow >= map.length || mapCol >= map[0].length) {
                         continue;
                     }
 
@@ -530,8 +565,10 @@ public class PrimaryController {
                         }
                     }
 
-                    // Draw image
-                    gc.drawImage(image, col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    double drawX = Math.round(col * TILE_SIZE - (cameraX % 1) * TILE_SIZE);
+                    double drawY = Math.round(row * TILE_SIZE - (cameraY % 1) * TILE_SIZE);
+                    gc.drawImage(image, drawX, drawY, TILE_SIZE, TILE_SIZE);
+
                 }
             }
         });
