@@ -57,10 +57,11 @@ public class PrimaryController {
     private double cameraX = 0;
     private double cameraY = 0;
 
+    private static final Random rand = new Random();
+
     /*
      * Variables for handling NPC and mob spawning and movement.
      */
-    private int percent = 0;
     private int numberKeypressed = 0;
     private double moveSpeed = 0.1;
     private boolean upPressed, downPressed, leftPressed, rightPressed;
@@ -236,19 +237,25 @@ public class PrimaryController {
 
         Timer t = new Timer();
 
-        // Spawn Mobs, this is very resource intensive, needs to be re-worked.
-        Random r = new Random();
+        // Spawn Mobs in random locations on the map
         System.out.print("\033[H\033[2J");
-        int i = 1000;
+        int i = mapWidth * mapHeight / 50;
+        int printInterval = Math.max(i / 100, 1);
         for (int index = 0; index < i; index++) {
-            int x = r.nextInt(mapWidth);
-            int y = r.nextInt(mapHeight);
+            int x = rand.nextInt(mapWidth);
+            int y = rand.nextInt(mapHeight);
             if (map[x][y] == 0) {
                 spawnMob(x, y);
             }
-            System.out.print("\rSpawning Mobs... " + percent + "%");
-            percent = (index * 100) / i;
+
+            // Update the progress only at intervals
+            if (index % printInterval == 0 || index == i - 1) {
+                int percent = (index * 100) / i;
+                System.out.print("\rSpawning Mobs... " + percent + "%");
+            }
         }
+        System.out.println("\rSpawning Mobs... 100%");
+
 
         /*
          * Timer task for moving NPCs and mobs every 500 milliseconds.
@@ -450,7 +457,6 @@ public class PrimaryController {
          */
         private int[][] generateMap(int width, int height) {
             int[][] generatedMap = new int[height][width];
-            Random rand = new Random();
             long seed = 100 + (long) (rand.nextDouble() * (1000000 - 100));
         
             for (int y = 0; y < height; y++) {
@@ -585,7 +591,6 @@ public class PrimaryController {
      * @param y ypos to spawn at
      */
     private void spawnNpc(int x, int y) {
-        Random rand = new Random();
         if (!names.isEmpty()) {
             npcList.add(new Npc(y, x, names.get(rand.nextInt(names.size())), map));
             if (npcList.get(npcList.size()-1).getName().equals("Bodger")) {
@@ -597,38 +602,63 @@ public class PrimaryController {
         }
     }
 
+    /**
+     * Draws an NPC on the map at its current position.
+     * @param guy The NPC to be drawn.
+     */
     private void drawNpc(Npc guy) {
         map[guy.getyPos()][guy.getxPos()] = 2;
     }
 
+    /**
+     * Spawns a mob at the specified coordinates with a random type and name.
+     * @param x x position to spawn at
+     * @param y y position to spawn at
+     */
     private void spawnMob(int x, int y) {
-        Random rand = new Random();
         int temp = rand.nextInt(3);
-        if (temp == 0) {
-            if (!cowNames.isEmpty()) {
-                mobList.add(new mob(y, x, cowNames.get(rand.nextInt(cowNames.size())), "cow", map));
-                drawMob(mobList.get(mobList.size() - 1));
-            } else {
-                System.err.println("Error: Names list is empty. Cannot spawn mob.");
-            }
-        } else if (temp == 1) {
-            if (!sheepNames.isEmpty()) {
-                mobList.add(new mob(y, x, sheepNames.get(rand.nextInt(sheepNames.size())), "sheep", map));
-                drawMob(mobList.get(mobList.size() - 1));
-            } else {
-                System.err.println("Error: Names list is empty. Cannot spawn mob.");
-            }
-        } else if (temp == 2) {
-            if (!chickenNames.isEmpty()) {
-                if (rand.nextInt(1000) == 0) {// 0.1% chance of BIG BIRD
-                    mobList.add(new mob(y, x, "Big Bird", "jumbo", map));
+        String mobName = "";
+        String mobType = "";
+        boolean validNameList = true;
+
+        switch (temp) {
+            case 0:
+                if (!cowNames.isEmpty()) {
+                    mobName = cowNames.get(rand.nextInt(cowNames.size()));
+                    mobType = "cow";
                 } else {
-                    mobList.add(new mob(y, x, chickenNames.get(rand.nextInt(chickenNames.size())), "chicken", map));
+                    validNameList = false;
                 }
-                drawMob(mobList.get(mobList.size() - 1));
-            } else {
-                System.err.println("Error: Names list is empty. Cannot spawn mob.");
-            }
+                break;
+            case 1:
+                if (!sheepNames.isEmpty()) {
+                    mobName = sheepNames.get(rand.nextInt(sheepNames.size()));
+                    mobType = "sheep";
+                } else {
+                    validNameList = false;
+                }
+                break;
+            case 2:
+                if (!chickenNames.isEmpty()) {
+                    // 0.1% chance of "Big Bird"
+                    if (rand.nextInt(1000) == 0) {
+                        mobName = "Big Bird";
+                        mobType = "jumbo";
+                    } else {
+                        mobName = chickenNames.get(rand.nextInt(chickenNames.size()));
+                        mobType = "chicken";
+                    }
+                } else {
+                    validNameList = false;
+                }
+                break;
+        }
+
+        if (validNameList) {
+            mobList.add(new mob(y, x, mobName, mobType, map));
+            drawMob(mobList.get(mobList.size() - 1));
+        } else {
+            System.err.println("Error: Names list is empty. Cannot spawn mob.");
         }
     }
 
@@ -639,16 +669,17 @@ public class PrimaryController {
     private void drawMob(mob guy) {
         map[guy.getyPos()][guy.getxPos()] = 4;
     }
-
     /**
      * Renders the visible portion of the map on the canvas based on the camera position.
      * This method is called whenever the map needs to be redrawn, such as after movement or spawning entities.
+     * NPCs and mobs are rendered as overlays on top of the base tile.
      */
     private void renderMap() {
         Platform.runLater(() -> {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
+            // Draw base tiles
             for (int row = 0; row < TILES_TO_RENDER; row++) {
                 for (int col = 0; col < TILES_TO_RENDER; col++) {
                     int mapRow = (int)(cameraY + row);
@@ -659,7 +690,6 @@ public class PrimaryController {
                     }
 
                     Image image;
-                    // Once again, reference codex doc for better labeled values
                     switch (map[mapRow][mapCol]) {
                         case 0:
                             image = grassImg;
@@ -714,30 +744,35 @@ public class PrimaryController {
                             break;
                     }
 
-                    // NPC check
-                    if (map[mapRow][mapCol] == 2) {
-                        for (Npc guy : npcList) {
-                            if (guy.getxPos() == mapCol && guy.getyPos() == mapRow) {
-                                image = guy.getImage();
-                                break;
-                            }
-                        }
-                    }
-
-                    // Mob check
-                    if (map[mapRow][mapCol] == 4) {
-                        for (mob guy : mobList) {
-                            if (guy.getxPos() == mapCol && guy.getyPos() == mapRow) {
-                                image = guy.getImage();
-                                break;
-                            }
-                        }
-                    }
-
                     double drawX = Math.round(col * TILE_SIZE - (cameraX % 1) * TILE_SIZE);
                     double drawY = Math.round(row * TILE_SIZE - (cameraY % 1) * TILE_SIZE);
                     gc.drawImage(image, drawX, drawY, TILE_SIZE, TILE_SIZE);
+                }
+            }
 
+            // Draw NPCs as overlays
+            for (Npc guy : npcList) {
+                int mapCol = guy.getxPos();
+                int mapRow = guy.getyPos();
+                int col = mapCol - (int)cameraX;
+                int row = mapRow - (int)cameraY;
+                if (col >= 0 && col < TILES_TO_RENDER && row >= 0 && row < TILES_TO_RENDER) {
+                    double drawX = Math.round(col * TILE_SIZE - (cameraX % 1) * TILE_SIZE);
+                    double drawY = Math.round(row * TILE_SIZE - (cameraY % 1) * TILE_SIZE);
+                    gc.drawImage(guy.getImage(), drawX, drawY, TILE_SIZE, TILE_SIZE);
+                }
+            }
+
+            // Draw mobs as overlays
+            for (mob guy : mobList) {
+                int mapCol = guy.getxPos();
+                int mapRow = guy.getyPos();
+                int col = mapCol - (int)cameraX;
+                int row = mapRow - (int)cameraY;
+                if (col >= 0 && col < TILES_TO_RENDER && row >= 0 && row < TILES_TO_RENDER) {
+                    double drawX = Math.round(col * TILE_SIZE - (cameraX % 1) * TILE_SIZE);
+                    double drawY = Math.round(row * TILE_SIZE - (cameraY % 1) * TILE_SIZE);
+                    gc.drawImage(guy.getImage(), drawX, drawY, TILE_SIZE, TILE_SIZE);
                 }
             }
         });
