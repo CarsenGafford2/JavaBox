@@ -30,7 +30,7 @@ public class Npc {
     private Image leftImage;
     private int varient = 0;
 
-    // Stats
+    // Stats ~ 70 points total
     private Byte strength = 0;
     private Byte intelligence = 0;
     private Byte luck = 0;
@@ -65,6 +65,38 @@ public class Npc {
         this.task = "build";
 
         Random rand = new Random();
+        for (int i = 0; i < 70; i++) {
+            switch (rand.nextInt(7) + 1) {
+                case 1:
+                    this.strength++;
+                    break;
+                case 2:
+                    this.intelligence++;
+                    break;
+                case 3:
+                    this.luck++;
+                    break;
+                case 4:
+                    this.arcana++;
+                    break;
+                case 5:
+                    this.health++;
+                    break;
+                case 6:
+                    this.willpower++;
+                    break;
+                case 7:
+                    this.morality++;
+                    break;
+            }
+        }
+
+        System.out.println("NPC " + this.name + " created at (" + this.xpos + ", " + this.ypos + ") with stats: " +
+                "Strength: " + this.strength + ", Intelligence: " + this.intelligence +
+                ", Luck: " + this.luck + ", Arcana: " + this.arcana +
+                ", Health: " + this.health + ", Willpower: " + this.willpower +
+                ", Morality: " + this.morality);
+
         this.whichBuilding = rand.nextInt(2);
         this.varient = rand.nextInt(21);
         this.rightImage = new Image(getClass().getResource("res/npc/guy" + this.varient + ".png").toString());
