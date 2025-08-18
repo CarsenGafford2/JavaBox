@@ -64,32 +64,19 @@ public class Npc {
         this.map = map;
         this.task = "build";
 
+        // Initial Stat Generation
         Random rand = new Random();
-        for (int i = 0; i < 70; i++) {
-            switch (rand.nextInt(7) + 1) {
-                case 1:
-                    this.strength++;
-                    break;
-                case 2:
-                    this.intelligence++;
-                    break;
-                case 3:
-                    this.luck++;
-                    break;
-                case 4:
-                    this.arcana++;
-                    break;
-                case 5:
-                    this.health++;
-                    break;
-                case 6:
-                    this.willpower++;
-                    break;
-                case 7:
-                    this.morality++;
-                    break;
-            }
-        }
+        int points = 70;
+
+        int[] stats = generateStats(points);
+
+        this.strength = (byte) stats[0];
+        this.intelligence = (byte) stats[1];
+        this.luck = (byte) stats[2];
+        this.arcana = (byte) stats[3];
+        this.health = (byte) stats[4];
+        this.willpower = (byte) stats[5];
+        this.morality = (byte) stats[6];
 
         System.out.println("NPC " + this.name + " created at (" + this.xpos + ", " + this.ypos + ") with stats: " +
                 "Strength: " + this.strength + ", Intelligence: " + this.intelligence +
@@ -251,6 +238,40 @@ public class Npc {
             }
         }
     }
+    
+    /**
+     * Generates NPC stats based on a total points system.
+     * @param total the total points to distribute among stats
+     * @return an array of stats where each index corresponds to a specific stat
+     */
+    public int[] generateStats(int total) {
+        int statCount = 7;
+        double[] weights = new double[statCount];
+        int[] stats = new int[statCount];
+        Random rand = new Random();
+
+        double weightSum = 0;
+        for (int i = 0; i < statCount; i++) {
+            weights[i] = rand.nextDouble() * 3.0 - 1.0;
+            weightSum += weights[i];
+        }
+
+        for (int i = 0; i < statCount; i++) {
+            stats[i] = (int) Math.round((weights[i] / weightSum) * total);
+        }
+
+        int sum = 0;
+        for (int s : stats) sum += s;
+
+        int diff = total - sum;
+        if (diff != 0) {
+            stats[rand.nextInt(statCount)] += diff;
+        }
+
+        return stats;
+    }
+
+
     /**
      * Load building blueprint from a CSV file.
      * @param filePath the path to the CSV file
