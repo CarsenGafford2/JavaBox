@@ -34,6 +34,10 @@ public class Npc {
     private Byte strength = 0;
     private Byte intelligence = 0;
     private Byte luck = 0;
+    private Byte arcana = 0;
+    private Byte health = 0;
+    private Byte willpower = 0;
+    private Byte morality = 0;
 
     private List<Map.Entry<Point, Integer>> blueprint;
 
