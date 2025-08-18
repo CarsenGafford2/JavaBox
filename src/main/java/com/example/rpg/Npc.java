@@ -30,6 +30,11 @@ public class Npc {
     private Image leftImage;
     private int varient = 0;
 
+    // Stats
+    private Byte strength = 0;
+    private Byte intelligence = 0;
+    private Byte luck = 0;
+
     private List<Map.Entry<Point, Integer>> blueprint;
 
     private int requiredWood = 14;

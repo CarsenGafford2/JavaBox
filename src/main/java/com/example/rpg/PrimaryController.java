@@ -308,6 +308,17 @@ public class PrimaryController {
                         TILES_TO_RENDER = 700 / TILE_SIZE;
                         renderMap();
                     }
+                    if (event.getCode() == KeyCode.DIGIT1) numberKeypressed = 0;
+                    if (event.getCode() == KeyCode.DIGIT2) numberKeypressed = 1;
+                    if (event.getCode() == KeyCode.DIGIT3) numberKeypressed = 2;
+                    if (event.getCode() == KeyCode.DIGIT4) numberKeypressed = 3;
+                    if (event.getCode() == KeyCode.DIGIT5) numberKeypressed = 4;
+                    if (event.getCode() == KeyCode.DIGIT6) numberKeypressed = 5;
+                    if (event.getCode() == KeyCode.DIGIT7) numberKeypressed = 6;
+                    if (event.getCode() == KeyCode.DIGIT8) numberKeypressed = 7;
+                    if (event.getCode() == KeyCode.DIGIT9) numberKeypressed = 8;
+                    if (event.getCode() == KeyCode.DIGIT0) numberKeypressed = 9;
+
                     canvas.setOnScroll(scrollEvent -> {
                         if (scrollEvent.getDeltaY() > 0) {
                             TILE_SIZE = Math.min(100, TILE_SIZE + 2);
@@ -440,7 +451,7 @@ public class PrimaryController {
                     case 7:
                         map[row][col] = 8;
                         break;
-                    case 78:
+                    case 8:
                         map[row][col] = 0;
                         break;
                 }
