@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
 import javax.imageio.ImageIO;
+
+import com.example.rpg.mobScripts.cow;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -134,9 +137,6 @@ public class PrimaryController {
     private ArrayList<Npc> npcList = new ArrayList<>();
     private ArrayList<mob> mobList = new ArrayList<>();
     private ArrayList<String> names = new ArrayList<>();
-    private ArrayList<String> cowNames = new ArrayList<>();
-    private ArrayList<String> sheepNames = new ArrayList<>();
-    private ArrayList<String> chickenNames = new ArrayList<>();
 
     /**
      * Initializes the game, generates the map, loads names, spawns NPCs and mobs, and sets up rendering and input handling.
@@ -185,53 +185,7 @@ public class PrimaryController {
         } catch (Exception e) {
             System.err.println(e);
         }
-        try {
-            file = new File(getClass().getResource("names/cowNames.txt").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        
-        try {
-            Scanner scan = new Scanner(file);
-            while (scan.hasNextLine()) {
-                cowNames.add(scan.nextLine());
-            }
-            scan.close();
-        } catch (Exception e) {
-            System.err.println(e);
-        }
 
-        try {
-            file = new File(getClass().getResource("names/sheepNames.txt").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        
-        try {
-            Scanner scan = new Scanner(file);
-            while (scan.hasNextLine()) {
-                sheepNames.add(scan.nextLine());
-            }
-            scan.close();
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-
-        try {
-            file = new File(getClass().getResource("names/chickenNames.txt").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        
-        try {
-            Scanner scan = new Scanner(file);
-            while (scan.hasNextLine()) {
-                chickenNames.add(scan.nextLine());
-            }
-            scan.close();
-        } catch (Exception e) {
-            System.err.println(e);
-        }
         canvas.setFocusTraversable(true);
         canvas.requestFocus();
 
@@ -627,50 +581,8 @@ public class PrimaryController {
      * @param y y position to spawn at
      */
     private void spawnMob(int x, int y) {
-        int temp = rand.nextInt(3);
-        String mobName = "";
-        String mobType = "";
-        boolean validNameList = true;
-
-        switch (temp) {
-            case 0:
-                if (!cowNames.isEmpty()) {
-                    mobName = cowNames.get(rand.nextInt(cowNames.size()));
-                    mobType = "cow";
-                } else {
-                    validNameList = false;
-                }
-                break;
-            case 1:
-                if (!sheepNames.isEmpty()) {
-                    mobName = sheepNames.get(rand.nextInt(sheepNames.size()));
-                    mobType = "sheep";
-                } else {
-                    validNameList = false;
-                }
-                break;
-            case 2:
-                if (!chickenNames.isEmpty()) {
-                    // 0.1% chance of "Big Bird"
-                    if (rand.nextInt(1000) == 0) {
-                        mobName = "Big Bird";
-                        mobType = "jumbo";
-                    } else {
-                        mobName = chickenNames.get(rand.nextInt(chickenNames.size()));
-                        mobType = "chicken";
-                    }
-                } else {
-                    validNameList = false;
-                }
-                break;
-        }
-
-        if (validNameList) {
-            mobList.add(new mob(y, x, mobName, mobType, map));
-            drawMob(mobList.get(mobList.size() - 1));
-        } else {
-            System.err.println("Error: Names list is empty. Cannot spawn mob.");
-        }
+        mobList.add(new cow(y, x, map));
+        drawMob(mobList.get(mobList.size() - 1));
     }
 
     /**

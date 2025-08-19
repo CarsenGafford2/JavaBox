@@ -1,5 +1,6 @@
 package com.example.rpg;
 import java.util.*;
+import java.util.function.Supplier;
 
 import javafx.scene.image.Image;
 
@@ -11,38 +12,31 @@ import javafx.scene.image.Image;
  * @author Carsen Gafford
  * @version alpha v0.2.2
  */
-public class mob {
+public abstract class mob {
 
-    private int xpos;
-    private int ypos;
-    private int maxWidth;
-    private int maxHeight;
-    private int[][] map;
-    private String name;
-    private String type;
-    private Image img;
-    private String right;
-    private String left;
-    private Image rightImage;
-    private Image leftImage;
-    private int varient = 0;
+    protected int xpos;
+    protected int ypos;
+    protected int maxWidth;
+    protected int maxHeight;
+    protected int[][] map;
+    protected String name;
+    protected Image img;
+    protected String right;
+    protected String left;
+    protected int varient = 0;
 
-    public mob(int xpos, int ypos, String name, String type, int[][] map) {
+    private static final List<Supplier<? extends mob>> registry = new ArrayList<>();
+
+    public mob(int xpos, int ypos, int[][] map, Image img) {
         this.xpos = xpos;
         this.ypos = ypos;
-        this.name = name;
         this.maxHeight = map.length;
         this.maxWidth = map[0].length;
         this.map = map;
-        this.type = type;
 
         Random rand = new Random();
         this.varient = rand.nextInt(2);
-        this.right = checkAndLoadTexture("mods/mob/" + this.type + this.varient + ".png", "res/mob/" + this.type + this.varient + ".png");
-        this.left = checkAndLoadTexture("mods/mob/" + this.type + this.varient + "r" + ".png", "res/mob/" + this.type + this.varient + "r" + ".png");
-        this.rightImage = new Image(right);
-        this.leftImage = new Image(left);
-        this.img = rightImage;
+        this.img = img;
     }
 
     /**
@@ -52,17 +46,25 @@ public class mob {
      * @return the URL of the loaded texture
      * @throws IllegalArgumentException if neither texture is found
      */
-    private String checkAndLoadTexture(String modPath, String defaultPath) {
+    protected static String checkAndLoadTexture(String modPath, String defaultPath) {
         boolean mod = false;
-        if (getClass().getResource(modPath) != null && mod) {
-            return getClass().getResource(modPath).toString();
+        if (mob.class.getResource(modPath) != null && mod) {
+            return mob.class.getResource(modPath).toString();
         } else {
-            if (getClass().getResource(defaultPath) != null) {
-                return getClass().getResource(defaultPath).toString();
+            if (mob.class.getResource(defaultPath) != null) {
+                return mob.class.getResource(defaultPath).toString();
             } else {
                 throw new IllegalArgumentException("Resource not found: " + defaultPath);
             }
         }
+    }
+
+    public static void register(Supplier<? extends mob> supplier) {
+        registry.add(supplier);
+    }
+
+    public static List<Supplier<? extends mob>> getRegistry() {
+        return registry;
     }
 
     /**
@@ -75,12 +77,10 @@ public class mob {
         if (temp == 0) {
             if (xpos + 1 < maxWidth && map[ypos][xpos + 1] == 0) {
                 xpos++;
-                img = rightImage;
             }
         } else if (temp == 1) {
             if (xpos - 1 >= 0 && map[ypos][xpos - 1] == 0) {
                 xpos--;
-                img = leftImage;
             }
         } else if (temp == 2) {
             if (ypos + 1 < maxHeight && map[ypos + 1][xpos] == 0) ypos++;
