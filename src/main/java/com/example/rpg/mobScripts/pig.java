@@ -8,14 +8,14 @@ import com.example.rpg.mob;
 
 import javafx.scene.image.Image;
 
-public class cow extends mob {
+public class pig extends mob {
 
-    private static final Image img = new Image(cow.class.getResourceAsStream("/com/example/rpg/res/mob/cow0.png"));
-    InputStream input = cow.class.getResourceAsStream("/com/example/rpg/names/cowNames.txt");
+    private static final Image img = new Image(sheep.class.getResourceAsStream("/com/example/rpg/res/mob/pig.png"));
+    InputStream input = cow.class.getResourceAsStream("/com/example/rpg/names/pigNames.txt");
     Scanner scan = new Scanner(input);
     private ArrayList<String> names = new ArrayList<>();
 
-    public cow() {
+    public pig() {
         super(0, 0, new int[1][1], img);
         name = "Debug";
 
@@ -32,6 +32,6 @@ public class cow extends mob {
     }
 
     static {
-        mob.register(cow::new);
+        mob.register(pig::new);
     }
 }

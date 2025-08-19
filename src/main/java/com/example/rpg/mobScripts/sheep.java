@@ -11,13 +11,14 @@ import javafx.scene.image.Image;
 public class sheep extends mob {
 
     private static final Image img = new Image(sheep.class.getResourceAsStream("/com/example/rpg/res/mob/sheep0.png"));
-    InputStream input = sheep.class.getResourceAsStream("/com/example/rpg/names/sheepNames.txt");
+    InputStream input = cow.class.getResourceAsStream("/com/example/rpg/names/sheepNames.txt");
     Scanner scan = new Scanner(input);
     private ArrayList<String> names = new ArrayList<>();
 
-    public sheep(int xpos, int ypos, int[][] map) {
-        super(xpos, ypos, map, img);
-    
+    public sheep() {
+        super(0, 0, new int[1][1], img);
+        name = "Debug";
+
         try {
             while (scan.hasNextLine()) {
                 names.add(scan.nextLine());
@@ -28,12 +29,6 @@ public class sheep extends mob {
         }
         Random rand = new Random();
         name = names.get(rand.nextInt(names.size()));
-
-    }
-
-    public sheep() {
-        super(0, 0, new int[1][1], new Image(checkAndLoadTexture("../mods/mob/sheep0.png", "../res/mob/sheep0.png")));
-        name = "Debug";
     }
 
     static {

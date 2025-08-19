@@ -9,8 +9,6 @@ import java.net.URISyntaxException;
 import java.util.*;
 import javax.imageio.ImageIO;
 
-import com.example.rpg.mobScripts.*;
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -141,8 +139,15 @@ public class PrimaryController {
     /**
      * Initializes the game, generates the map, loads names, spawns NPCs and mobs, and sets up rendering and input handling.
      * This method is called automatically after the FXML elements have been loaded.
+     * @throws ClassNotFoundException
      */
-    public void initialize() {
+    public void initialize() throws ClassNotFoundException {
+
+        Class.forName("com.example.rpg.mobScripts.chicken");
+        Class.forName("com.example.rpg.mobScripts.cow");
+        Class.forName("com.example.rpg.mobScripts.sheep");
+        Class.forName("com.example.rpg.mobScripts.pig");
+
         // Clear console
         System.out.print("\033[H\033[2J");
         // Default map size, will be changed later to be dynamic.
@@ -582,10 +587,9 @@ public class PrimaryController {
      */
     private void spawnMob(int x, int y) {
         mob randomMob = mob.createRandomMob();
-        System.out.println(randomMob);
         
         if (randomMob != null) {
-            randomMob.setPosition(x, y);
+            randomMob.setPosition(y, x);
             randomMob.setMap(map);
     
             mobList.add(randomMob);
