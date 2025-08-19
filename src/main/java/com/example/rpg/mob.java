@@ -59,6 +59,21 @@ public abstract class mob {
         }
     }
 
+    public void setPosition(int x, int y) {
+        this.xpos = x;
+        this.ypos = y;
+    }
+
+    public void setMap(int[][] map) {
+        this.map = map;
+    }
+
+    public static mob createRandomMob() {
+        if (registry.isEmpty()) return null;
+        int index = new Random().nextInt(registry.size());
+        return registry.get(index).get();
+    }
+
     public static void register(Supplier<? extends mob> supplier) {
         registry.add(supplier);
     }

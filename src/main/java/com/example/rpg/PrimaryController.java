@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import javax.imageio.ImageIO;
 
-import com.example.rpg.mobScripts.cow;
+import com.example.rpg.mobScripts.*;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
@@ -581,9 +581,17 @@ public class PrimaryController {
      * @param y y position to spawn at
      */
     private void spawnMob(int x, int y) {
-        mobList.add(new cow(y, x, map));
-        drawMob(mobList.get(mobList.size() - 1));
-    }
+        mob randomMob = mob.createRandomMob();
+        System.out.println(randomMob);
+        
+        if (randomMob != null) {
+            randomMob.setPosition(x, y);
+            randomMob.setMap(map);
+    
+            mobList.add(randomMob);
+            drawMob(randomMob);
+        }
+    }    
 
     /**
      * Draws a mob on the map at its current position.

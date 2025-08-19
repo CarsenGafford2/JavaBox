@@ -19,7 +19,7 @@ public class cow extends mob {
     Scanner scan = new Scanner(input);
     private ArrayList<String> cowNames = new ArrayList<>();
 
-    public cow(int xpos, int ypos, int[][] map) {    
+    public cow(int xpos, int ypos, int[][] map) {
         super(xpos, ypos, map, img);
     
         try {
@@ -36,7 +36,7 @@ public class cow extends mob {
     }
 
     public cow() {
-        super(0, 0, new int[1][1], new Image(checkAndLoadTexture("../mods/mob/cow.png", "../res/mob/cow.png")));
+        super(0, 0, new int[1][1], new Image(checkAndLoadTexture("../mods/mob/cow0.png", "../res/mob/cow0.png")));
         name = "DebugCow";
     }
 }
