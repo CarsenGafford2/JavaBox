@@ -705,20 +705,28 @@ public class PrimaryController {
                 }
             }
 
-            // Draw NPCs as overlays
+            // Draw NPCs as overlays with smooth movement
             for (Npc guy : npcList) {
-                double guyX = guy.getX();
-                double guyY = guy.getY();
-            
-                double screenX = (guyX - cameraX) * TILE_SIZE;
-                double screenY = (guyY - cameraY) * TILE_SIZE;
-            
+                double lastX = guy.getLastXPos();
+                double lastY = guy.getLastYPos();
+                double newX = guy.getxPos();
+                double newY = guy.getyPos();
+
+                // Interpolation factor (0.0 to 1.0), you may want to make this a field and update it each frame
+                double alpha = 0.2; // For demonstration, adjust as needed for smoothness
+
+                double interpX = lastX + (newX - lastX) * alpha;
+                double interpY = lastY + (newY - lastY) * alpha;
+
+                double screenX = (interpX - cameraX) * TILE_SIZE;
+                double screenY = (interpY - cameraY) * TILE_SIZE;
+
                 // Optional: cull NPCs outside view bounds
                 if (screenX >= -TILE_SIZE && screenX < TILES_TO_RENDER * TILE_SIZE &&
                     screenY >= -TILE_SIZE && screenY < TILES_TO_RENDER * TILE_SIZE) {
                     gc.drawImage(guy.getImage(), screenX, screenY, TILE_SIZE, TILE_SIZE);
                 }
-            }            
+            }
 
             // Draw mobs as overlays
             for (mob guy : mobList) {
