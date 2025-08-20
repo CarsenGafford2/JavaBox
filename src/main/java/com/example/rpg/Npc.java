@@ -18,8 +18,8 @@ import javafx.scene.image.Image;
  */
 public class Npc {
 
-    private int xpos;
-    private int ypos;
+    private double xpos;
+    private double ypos;
     private int maxWidth;
     private int maxHeight;
     private int[][] map;
@@ -176,8 +176,8 @@ public class Npc {
                 Point target = null;
 
                 for (int attempts = 0; attempts < 100; attempts++) {
-                    int targetX = xpos + rand.nextInt(21) - 10;
-                    int targetY = ypos + rand.nextInt(21) - 10;
+                    int targetX = (int) xpos + rand.nextInt(21) - 10;
+                    int targetY = (int) ypos + rand.nextInt(21) - 10;
 
                     if (targetX >= 0 && targetY >= 0 && targetX < maxWidth && targetY < maxHeight && map[targetY][targetX] == 0) {
                         target = new Point(targetX, targetY);
@@ -186,7 +186,7 @@ public class Npc {
                 }
 
                 if (target != null) {
-                    path = aStarPathfinding(new Point(xpos, ypos), target, 0);
+                    path = aStarPathfinding(new Point((int) xpos, (int) ypos), target, 0);
                 } else {
                     System.out.println("No valid wander target found.");
                 }
@@ -301,7 +301,7 @@ public class Npc {
                 }
 
                 if (target != null) {
-                    path = aStarPathfinding(new Point(xpos, ypos), target, 0);
+                    path = aStarPathfinding(new Point((int) xpos, (int) ypos), target, 0);
                 } else {
                     System.out.println("No valid explore target found.");
                 }

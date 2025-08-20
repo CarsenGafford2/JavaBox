@@ -707,16 +707,18 @@ public class PrimaryController {
 
             // Draw NPCs as overlays
             for (Npc guy : npcList) {
-                int mapCol = guy.getxPos();
-                int mapRow = guy.getyPos();
-                int col = mapCol - (int)cameraX;
-                int row = mapRow - (int)cameraY;
-                if (col >= 0 && col < TILES_TO_RENDER && row >= 0 && row < TILES_TO_RENDER) {
-                    double drawX = Math.round(col * TILE_SIZE - (cameraX % 1) * TILE_SIZE);
-                    double drawY = Math.round(row * TILE_SIZE - (cameraY % 1) * TILE_SIZE);
-                    gc.drawImage(guy.getImage(), drawX, drawY, TILE_SIZE, TILE_SIZE);
+                double guyX = guy.getX();
+                double guyY = guy.getY();
+            
+                double screenX = (guyX - cameraX) * TILE_SIZE;
+                double screenY = (guyY - cameraY) * TILE_SIZE;
+            
+                // Optional: cull NPCs outside view bounds
+                if (screenX >= -TILE_SIZE && screenX < TILES_TO_RENDER * TILE_SIZE &&
+                    screenY >= -TILE_SIZE && screenY < TILES_TO_RENDER * TILE_SIZE) {
+                    gc.drawImage(guy.getImage(), screenX, screenY, TILE_SIZE, TILE_SIZE);
                 }
-            }
+            }            
 
             // Draw mobs as overlays
             for (mob guy : mobList) {
