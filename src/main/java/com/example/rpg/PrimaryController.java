@@ -87,6 +87,10 @@ public class PrimaryController {
     private String tableBright = checkForModTexture("mods/textures/tableBright.png", "res/textures/tableBright.png");
     private String tableTright = checkForModTexture("mods/textures/tableTright.png", "res/textures/tableTright.png");
     private String tableTleft = checkForModTexture("mods/textures/tableTleft.png", "res/textures/tableTleft.png");
+    private String shelterBleft = checkForModTexture("mods/textures/shelterBleft.png", "res/textures/shelterBleft.png");
+    private String shelterBright = checkForModTexture("mods/textures/shelterBright.png", "res/textures/shelterBright.png");
+    private String shelterTright = checkForModTexture("mods/textures/shelterTright.png", "res/textures/shelterTright.png");
+    private String shelterTleft = checkForModTexture("mods/textures/shelterTleft.png", "res/textures/shelterTleft.png");
 
     /**
      * Checks for a modded texture first, if not found, defaults to the built-in texture.
@@ -127,6 +131,10 @@ public class PrimaryController {
     private Image tableBrightImage = new Image(tableBright);
     private Image tableTrightImage = new Image(tableTright);
     private Image tableTleftImage = new Image(tableTleft);
+    private Image shelterBleftImage = new Image(shelterBleft);
+    private Image shelterBrightImage = new Image(shelterBright);
+    private Image shelterTrightImage = new Image(shelterTright);
+    private Image shelterTleftImage = new Image(shelterTleft);
 
     /*
      * Lists for managing NPCs, mobs, and names.
@@ -673,6 +681,18 @@ public class PrimaryController {
                             break;
                         case 17:
                             image = tableTleftImage;
+                            break;
+                        case 18:
+                            image = shelterBleftImage;
+                            break;
+                        case 19:
+                            image = shelterBrightImage;
+                            break;
+                        case 20:
+                            image = shelterTrightImage;
+                            break;
+                        case 21:
+                            image = shelterTleftImage;
                             break;
                         default:
                             image = grassImg;

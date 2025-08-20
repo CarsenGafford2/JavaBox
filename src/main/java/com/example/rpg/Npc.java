@@ -166,15 +166,19 @@ public class Npc {
                 }
             }
         } else if (this.task.equals("build")) {
-            if (this.whichBuilding == 0) {
-                this.requiredStone = 11;
-                this.requiredWood = 14;
-                this.blueprint = loadBlueprintFromCsv("buildings/basicBlueprint.csv");
-            } else {
-                this.requiredStone = 55;
-                this.requiredWood = 76;
-                this.blueprint = loadBlueprintFromCsv("buildings/mediumBlueprint.csv");
-            }
+            // if (this.whichBuilding == 0) {
+            //     this.requiredStone = 11;
+            //     this.requiredWood = 14;
+            //     this.blueprint = loadBlueprintFromCsv("buildings/basicBlueprint.csv");
+            // } else {
+            //     this.requiredStone = 55;
+            //     this.requiredWood = 76;
+            //     this.blueprint = loadBlueprintFromCsv("buildings/mediumBlueprint.csv");
+            // }
+
+            this.requiredStone = 0;
+            this.requiredWood = 4;
+            this.blueprint = loadBlueprintFromCsv("buildings/shelter.csv");
 
             if (buildStep < this.blueprint.size()) {
                 if (this.wood < requiredWood) {
