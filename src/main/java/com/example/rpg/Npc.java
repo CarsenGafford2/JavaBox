@@ -126,7 +126,7 @@ public class Npc {
                 this.task = "build";
             }
         } else if (this.task.equals("stone")) {
-            if (stone >= requiredStone) {
+            if (stone >= requiredStone || strength < 0) {
                 this.task = "wander";
                 path = null;
             } else {
@@ -149,7 +149,7 @@ public class Npc {
                 }
             }
         } else if (this.task.equals("wood")) {
-            if (wood >= requiredWood) {
+            if (wood >= requiredWood || this.strength < 0) {
                 this.task = "wander";
                 path = null;
             } else {
