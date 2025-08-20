@@ -31,13 +31,13 @@ public class Npc {
     private int varient = 0;
 
     // Stats ~ 70 points total
-    private Byte strength = 0;
-    private Byte intelligence = 0;
-    private Byte luck = 0;
-    private Byte arcana = 0;
-    private Byte health = 0;
-    private Byte willpower = 0;
-    private Byte morality = 0;
+    private short strength = 0;
+    private short intelligence = 0;
+    private short luck = 0;
+    private short arcana = 0;
+    private short health = 0;
+    private short willpower = 0;
+    private short morality = 0;
 
     private List<Map.Entry<Point, Integer>> blueprint;
 
@@ -70,19 +70,92 @@ public class Npc {
 
         int[] stats = generateStats(points);
 
-        this.strength = (byte) stats[0];
-        this.intelligence = (byte) stats[1];
-        this.luck = (byte) stats[2];
-        this.arcana = (byte) stats[3];
-        this.health = (byte) stats[4];
-        this.willpower = (byte) stats[5];
-        this.morality = (byte) stats[6];
+        this.strength = (short) stats[0];
+        this.intelligence = (short) stats[1];
+        this.luck = (short) stats[2];
+        this.arcana = (short) stats[3];
+        this.health = (short) stats[4];
+        this.willpower = (short) stats[5];
+        this.morality = (short) stats[6];
 
         System.out.println("NPC " + this.name + " created at (" + this.xpos + ", " + this.ypos + ") with stats: " +
                 "Strength: " + this.strength + ", Intelligence: " + this.intelligence +
                 ", Luck: " + this.luck + ", Arcana: " + this.arcana +
                 ", Health: " + this.health + ", Willpower: " + this.willpower +
                 ", Morality: " + this.morality);
+
+        // Strength-based traits
+        if (this.strength > 50) this.traits.add("Hulking");
+        else if (this.strength > 30) this.traits.add("Strong");
+        else if (this.strength < 0) this.traits.add("Frail");
+
+        // Intelligence-based traits
+        if (this.intelligence > 90) this.traits.add("Genius");
+        else if (this.intelligence > 70) this.traits.add("Smart");
+        else if (this.intelligence < 30) this.traits.add("Dull");
+
+        // Luck-based traits
+        if (this.luck > 80) this.traits.add("Lucky");
+        else if (this.luck < 20) this.traits.add("Unlucky");
+
+        // Arcana (magic) traits
+        if (this.arcana > 85) this.traits.add("Archmage");
+        else if (this.arcana > 60) this.traits.add("Mystic");
+        else if (this.arcana > 40) this.traits.add("Dabbler");
+        else if (this.arcana < 20) this.traits.add("Magic-Impaired");
+
+        // Health-based traits
+        if (this.health > 90) this.traits.add("Robust");
+        else if (this.health > 70) this.traits.add("Healthy");
+        else if (this.health < 40) this.traits.add("Sickly");
+        else if (this.health < 20) this.traits.add("Near Death");
+
+        // Willpower traits
+        if (this.willpower > 90) this.traits.add("Unbreakable");
+        else if (this.willpower > 70) this.traits.add("Determined");
+        else if (this.willpower < 30) this.traits.add("Weak-Willed");
+
+        // Morality traits
+        if (this.morality > 80) this.traits.add("Saintly");
+        else if (this.morality > 60) this.traits.add("Honorable");
+        else if (this.morality < -80) this.traits.add("Monstrous");
+        else if (this.morality < -50) this.traits.add("Evil");
+        else if (this.morality < -20) this.traits.add("Ruthless");
+        else if (this.morality > 20 && this.morality < 60) this.traits.add("Compassionate");
+
+        // Composite traits (combined stat logic)
+        if (this.strength > 70 && this.willpower > 70) this.traits.add("Warlord");
+        if (this.intelligence > 70 && this.arcana > 70) this.traits.add("Sage");
+        if (this.intelligence < 40 && this.strength > 70) this.traits.add("Brute");
+        if (this.luck > 90 && this.intelligence < 30) this.traits.add("Fool's Fortune");
+        if (this.health < 30 && this.willpower > 80) this.traits.add("Endurer");
+        if (this.health > 70 && this.strength > 70) this.traits.add("Gladiator");
+
+        // Alignment-style traits
+        if (this.morality > 50 && this.intelligence > 60) this.traits.add("Wise Mentor");
+        if (this.morality < -60 && this.intelligence > 60) this.traits.add("Cunning Villain");
+        if (this.morality > 50 && this.arcana > 60) this.traits.add("Holy Sorcerer");
+        if (this.morality < -60 && this.arcana > 60) this.traits.add("Dark Mage");
+
+        // Personality/Behavioral traits (optional stat triggers or random chance)
+        if (this.intelligence > 70 && this.luck < 30) this.traits.add("Overthinker");
+        if (this.willpower < 20 && this.health < 40) this.traits.add("Cowardly");
+        if (this.health > 90 && this.morality > 70) this.traits.add("Guardian");
+        if (this.strength > 80 && this.morality < -60) this.traits.add("Enforcer");
+
+        // Optional wildcard/random-ish traits
+        if (this.luck > 50 && this.arcana > 50 && this.morality < 0) this.traits.add("Wild Card");
+        if (this.intelligence > 60 && this.willpower > 60 && this.luck < -30) this.traits.add("Unfortunate Scholar");
+        if (this.intelligence > 80 && this.strength < 30 && this.willpower < 30) this.traits.add("Glass Cannon");
+
+        // Miscellaneous fantasy/worldbuilding traits
+        if (this.arcana > 100) this.traits.add("Reality Bender");
+        if (this.health < 10) this.traits.add("Cursed");
+        if (this.willpower > 100) this.traits.add("Indomitable");
+        if (this.strength > 100) this.traits.add("Titan");
+        if (this.morality == 0) this.traits.add("Neutral");
+
+        System.out.println(this.name + " has the following traits: " + traits);
 
         this.whichBuilding = rand.nextInt(2);
         this.varient = rand.nextInt(21);
