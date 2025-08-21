@@ -700,6 +700,9 @@ public class PrimaryController {
                         case 21:
                             image = shelterTleftImage;
                             break;
+                        case 22:
+                            image = explosiveImage;
+                            break;
                         default:
                             image = grassImg;
                             break;
@@ -707,7 +710,12 @@ public class PrimaryController {
 
                     double drawX = Math.round(col * TILE_SIZE - (cameraX % 1) * TILE_SIZE);
                     double drawY = Math.round(row * TILE_SIZE - (cameraY % 1) * TILE_SIZE);
-                    gc.drawImage(image, drawX, drawY, TILE_SIZE, TILE_SIZE);
+                    if (map[mapRow][mapCol] == 22) {
+                        gc.drawImage(grassImg, drawX, drawY, TILE_SIZE, TILE_SIZE);
+                        gc.drawImage(image, drawX, drawY, TILE_SIZE, TILE_SIZE);
+                    } else {
+                        gc.drawImage(image, drawX, drawY, TILE_SIZE, TILE_SIZE);
+                    }
                 }
             }
 
