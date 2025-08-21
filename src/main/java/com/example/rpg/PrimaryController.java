@@ -93,6 +93,7 @@ public class PrimaryController {
     private String shelterBright = checkForModTexture("mods/textures/shelterBright.png", "res/textures/shelterBright.png");
     private String shelterTright = checkForModTexture("mods/textures/shelterTright.png", "res/textures/shelterTright.png");
     private String shelterTleft = checkForModTexture("mods/textures/shelterTleft.png", "res/textures/shelterTleft.png");
+    private String explosive = checkForModTexture("mods/textures/explosive.png", "res/textures/explosive.png");
 
     /**
      * Checks for a modded texture first, if not found, defaults to the built-in texture.
@@ -137,6 +138,7 @@ public class PrimaryController {
     private Image shelterBrightImage = new Image(shelterBright);
     private Image shelterTrightImage = new Image(shelterTright);
     private Image shelterTleftImage = new Image(shelterTleft);
+    private Image explosiveImage = new Image(explosive);
 
     /*
      * Lists for managing NPCs, mobs, and names.
@@ -430,7 +432,8 @@ public class PrimaryController {
                         map[row][col] = 7;
                         break;
                     case 7:
-                        map[row][col] = 8;
+                        map[row][col] = 22;
+                        Explosive bomb = new Explosive("bomb", 100, 5);
                         break;
                     case 8:
                         map[row][col] = 0;
