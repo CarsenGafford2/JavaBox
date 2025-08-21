@@ -254,7 +254,7 @@ public class Npc {
             // }
 
             this.requiredStone = 0;
-            this.requiredWood = 4;
+            this.requiredWood = 8;
             this.blueprint = loadBlueprintFromCsv("buildings/shelter.csv");
 
             if (buildStep < this.blueprint.size()) {
@@ -578,6 +578,14 @@ public class Npc {
 
     public int getLastYPos() {
         return lastypos;
+    }
+
+    public void setLastXPos(int lastxpos) {
+        this.lastxpos = lastxpos;
+    }
+
+    public void setLastYPos(int lastypos) {
+        this.lastypos = lastypos;
     }
 
     public String getName() {

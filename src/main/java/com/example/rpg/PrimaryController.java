@@ -58,6 +58,8 @@ public class PrimaryController {
     private double cameraX = 0;
     private double cameraY = 0;
 
+    private long npcUpdateTime;
+
     private static final Random rand = new Random();
 
     /*
@@ -204,6 +206,9 @@ public class PrimaryController {
 
         Timer t = new Timer();
 
+        Timer q = new Timer();
+
+
         // Spawn Mobs in random locations on the map
         System.out.print("\033[H\033[2J");
         int i = mapWidth * mapHeight / 50;
@@ -231,8 +236,13 @@ public class PrimaryController {
         t.schedule(new TimerTask() {
             @Override
             public void run() {
+                npcUpdateTime = System.currentTimeMillis();
+
                 for (Npc guy : new ArrayList<>(npcList)) {
+                    guy.setLastXPos(guy.getxPos());
+                    guy.setLastYPos(guy.getyPos());
                     map[guy.getyPos()][guy.getxPos()] = 0;
+                    guy.move();
                     guy.move();
                     drawNpc(guy);
                 }
@@ -252,9 +262,16 @@ public class PrimaryController {
                         System.err.println("Error: Mob position out of bounds: (" + mobY + ", " + mobX + ")");
                     }
                 }
-                renderMap();
             }
         }, 0, 500);
+
+        // Main render loop
+        q.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                renderMap();
+            }
+        }, 0, 8);
 
         // Handle key presses for movement and other actions.
         canvas.sceneProperty().addListener((obs, oldScene, newScene) -> {
@@ -268,12 +285,10 @@ public class PrimaryController {
                     if (event.getCode() == KeyCode.EQUALS) {
                         TILE_SIZE = Math.min(100, TILE_SIZE + 5);
                         TILES_TO_RENDER = 700 / TILE_SIZE;
-                        renderMap();
                     }
                     if (event.getCode() == KeyCode.MINUS) {
                         TILE_SIZE = Math.max(5, TILE_SIZE - 5);
                         TILES_TO_RENDER = 700 / TILE_SIZE;
-                        renderMap();
                     }
                     if (event.getCode() == KeyCode.DIGIT1) numberKeypressed = 0;
                     if (event.getCode() == KeyCode.DIGIT2) numberKeypressed = 1;
@@ -293,7 +308,6 @@ public class PrimaryController {
                             TILE_SIZE = Math.max(5, TILE_SIZE - 2);
                         }
                         TILES_TO_RENDER = 700 / TILE_SIZE;
-                        renderMap();
                     });
                 });
 
@@ -308,7 +322,6 @@ public class PrimaryController {
             }
         });
 
-        renderMap();
         }
 
         /**
@@ -422,8 +435,6 @@ public class PrimaryController {
                         map[row][col] = 0;
                         break;
                 }
-
-                renderMap();
             });
         }
 
@@ -538,25 +549,19 @@ public class PrimaryController {
 
                     double speed = moveSpeed * deltaTime * 60; // scale to 60 FPS
 
-                    boolean moved = false;
                     if (upPressed) {
                         cameraY = Math.max(0, cameraY - speed);
-                        moved = true;
                     }
                     if (downPressed) {
                         cameraY = Math.min(map.length - 10, cameraY + speed);
-                        moved = true;
                     }
                     if (leftPressed) {
                         cameraX = Math.max(0, cameraX - speed);
-                        moved = true;
                     }
                     if (rightPressed) {
                         cameraX = Math.min(map[0].length - 10, cameraX + speed);
-                        moved = true;
                     }
 
-                    if (moved) renderMap();
                 }
             };
             timer.start();
@@ -705,30 +710,29 @@ public class PrimaryController {
                 }
             }
 
-            // Draw NPCs as overlays with smooth movement
+            long currentTime = System.currentTimeMillis();
+            long timeSinceUpdate = currentTime - npcUpdateTime;
+            double alpha = Math.min(1.0, (double) timeSinceUpdate / 500.0);
+            
             for (Npc guy : npcList) {
                 double lastX = guy.getLastXPos();
                 double lastY = guy.getLastYPos();
                 double newX = guy.getxPos();
                 double newY = guy.getyPos();
-
-                // Interpolation factor (0.0 to 1.0), you may want to make this a field and update it each frame
-                double alpha = 0.2; // For demonstration, adjust as needed for smoothness
-
+            
                 double interpX = lastX + (newX - lastX) * alpha;
                 double interpY = lastY + (newY - lastY) * alpha;
-
+            
                 double screenX = (interpX - cameraX) * TILE_SIZE;
                 double screenY = (interpY - cameraY) * TILE_SIZE;
-
-                // Optional: cull NPCs outside view bounds
+            
                 if (screenX >= -TILE_SIZE && screenX < TILES_TO_RENDER * TILE_SIZE &&
                     screenY >= -TILE_SIZE && screenY < TILES_TO_RENDER * TILE_SIZE) {
                     gc.drawImage(guy.getImage(), screenX, screenY, TILE_SIZE, TILE_SIZE);
                 }
             }
+            
 
-            // Draw mobs as overlays
             for (mob guy : mobList) {
                 int mapCol = guy.getxPos();
                 int mapRow = guy.getyPos();
