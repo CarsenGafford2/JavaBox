@@ -243,13 +243,14 @@ public class PrimaryController {
                     guy.setLastYPos(guy.getyPos());
                     map[guy.getyPos()][guy.getxPos()] = 0;
                     guy.move();
-                    guy.move();
                     drawNpc(guy);
                 }
                 List<mob> mobListCopy = new ArrayList<>(mobList);
                 for (mob guy : mobListCopy) {
                     int mobY = guy.getyPos();
                     int mobX = guy.getxPos();
+                    guy.setLastXPos(mobX);
+                    guy.setLastYPos(mobY);
                     if (mobY >= 0 && mobY < map.length && mobX >= 0 && mobX < map[0].length) {
                         map[mobY][mobX] = 0;
                         if (guy.isHunted()) {
@@ -734,14 +735,20 @@ public class PrimaryController {
             
 
             for (mob guy : mobList) {
-                int mapCol = guy.getxPos();
-                int mapRow = guy.getyPos();
-                int col = mapCol - (int)cameraX;
-                int row = mapRow - (int)cameraY;
-                if (col >= 0 && col < TILES_TO_RENDER && row >= 0 && row < TILES_TO_RENDER) {
-                    double drawX = Math.round(col * TILE_SIZE - (cameraX % 1) * TILE_SIZE);
-                    double drawY = Math.round(row * TILE_SIZE - (cameraY % 1) * TILE_SIZE);
-                    gc.drawImage(guy.getImage(), drawX, drawY, TILE_SIZE, TILE_SIZE);
+                double lastX = guy.getLastXPos();
+                double lastY = guy.getLastYPos();
+                double newX = guy.getxPos();
+                double newY = guy.getyPos();
+
+                double interpX = lastX + (newX - lastX) * alpha;
+                double interpY = lastY + (newY - lastY) * alpha;
+
+                double screenX = (interpX - cameraX) * TILE_SIZE;
+                double screenY = (interpY - cameraY) * TILE_SIZE;
+
+                if (screenX >= -TILE_SIZE && screenX < TILES_TO_RENDER * TILE_SIZE &&
+                    screenY >= -TILE_SIZE && screenY < TILES_TO_RENDER * TILE_SIZE) {
+                    gc.drawImage(guy.getImage(), screenX, screenY, TILE_SIZE, TILE_SIZE);
                 }
             }
         });

@@ -24,6 +24,8 @@ public abstract class mob {
     protected String right;
     protected String left;
     protected int varient = 0;
+    protected int lastxpos = 0;
+    protected int lastypos = 0;
 
     private static final List<Supplier<? extends mob>> registry = new ArrayList<>();
 
@@ -110,6 +112,11 @@ public abstract class mob {
      */
     public int getxPos() { return xpos; }
     public int getyPos() { return ypos; }
+    public int getLastXPos() { return lastxpos; }
+    public int getLastYPos() { return lastypos; }
+    public int setLastXPos(int x) { return lastxpos = x; }
+    public int setLastYPos(int y) { return lastypos = y; }
+
     public String getName() { return name; }
     public Image getImage() { return img; }
 
