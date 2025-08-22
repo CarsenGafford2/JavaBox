@@ -688,10 +688,10 @@ public class PrimaryController {
         LeafParticle(double canvasWidth, double canvasHeight) {
             x = r.nextDouble() * canvasWidth;
             y = r.nextDouble() * canvasHeight;
-            vx = 0.5 + r.nextDouble() * 3; // Increased vx for faster rightward movement
-            vy = 0.2 + r.nextDouble() * 0.4; // Increased vy for faster downward movement
+            vx = 0.5 + r.nextDouble() * 3;
+            vy = 0.2 + r.nextDouble() * 0.4;
             angle = r.nextDouble() * 360;
-            angularVelocity = -1.0 + r.nextDouble() * 2; // Faster rotation
+            angularVelocity = -1.0 + r.nextDouble() * 2;
             width = 8 + r.nextDouble() * 4;
             height = 3 + r.nextDouble() * 2;
             javafx.scene.paint.Color[] colors = {

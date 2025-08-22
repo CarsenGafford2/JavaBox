@@ -100,9 +100,13 @@ public abstract class mob {
                 xpos--;
             }
         } else if (temp == 2) {
-            if (ypos + 1 < maxHeight && map[ypos + 1][xpos] == 0) ypos++;
+            if (ypos + 1 < maxHeight && map[ypos + 1][xpos] == 0) {
+                ypos++;
+            }
         } else if (temp == 3) {
-            if (ypos - 1 >= 0 && map[ypos - 1][xpos] == 0) ypos--;
+            if (ypos - 1 >= 0 && map[ypos - 1][xpos] == 0) {
+                ypos--;
+            }
         }
     }
 
