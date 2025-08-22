@@ -94,6 +94,9 @@ public class PrimaryController {
     private String shelterTright = checkForModTexture("mods/textures/shelterTright.png", "res/textures/shelterTright.png");
     private String shelterTleft = checkForModTexture("mods/textures/shelterTleft.png", "res/textures/shelterTleft.png");
     private String explosive = checkForModTexture("mods/textures/explosive.png", "res/textures/explosive.png");
+    private String flame = checkForModTexture("mods/textures/flame.png", "res/textures/flame.png");
+    private String burntGrass = checkForModTexture("mods/textures/burntGrass.png", "res/textures/burntGrass.png");
+
 
     /**
      * Checks for a modded texture first, if not found, defaults to the built-in texture.
@@ -139,6 +142,8 @@ public class PrimaryController {
     private Image shelterTrightImage = new Image(shelterTright);
     private Image shelterTleftImage = new Image(shelterTleft);
     private Image explosiveImage = new Image(explosive);
+    private Image flameImage = new Image(flame);
+    private Image burntGrassImage = new Image(burntGrass);
 
     /*
      * Lists for managing NPCs, mobs, and names.
@@ -147,6 +152,7 @@ public class PrimaryController {
     private ArrayList<Npc> npcList = new ArrayList<>();
     private ArrayList<mob> mobList = new ArrayList<>();
     private ArrayList<String> names = new ArrayList<>();
+    private ArrayList<Explosive> activeExplosives = new ArrayList<>();
 
     /**
      * Initializes the game, generates the map, loads names, spawns NPCs and mobs, and sets up rendering and input handling.
@@ -246,6 +252,47 @@ public class PrimaryController {
                     map[guy.getyPos()][guy.getxPos()] = 0;
                     guy.move();
                     drawNpc(guy);
+                }
+                List<int[]> newFlames = new ArrayList<>();
+                double spreadChance = 0.6;
+                for (int i = 0; i < map.length; i++) {
+                    for (int j = 0; j < map[i].length; j++) {
+                        if (map[i][j] == 23) {
+                            map[i][j] = 24;
+                            if (i + 1 < map.length && map[i + 1][j] == 3 && rand.nextDouble() < spreadChance) {
+                                newFlames.add(new int[]{i + 1, j});
+                            }
+                            if (i - 1 >= 0 && map[i - 1][j] == 3 && rand.nextDouble() < spreadChance) {
+                                newFlames.add(new int[]{i - 1, j});
+                            }
+                            if (j + 1 < map[i].length && map[i][j + 1] == 3 && rand.nextDouble() < spreadChance) {
+                                newFlames.add(new int[]{i, j + 1});
+                            }
+                            if (j - 1 >= 0 && map[i][j - 1] == 3 && rand.nextDouble() < spreadChance) {
+                                newFlames.add(new int[]{i, j - 1});
+                            }
+                        }
+                    }
+                }
+                for (int[] pos : newFlames) {
+                    map[pos[0]][pos[1]] = 23;
+                }
+                for (Explosive explosive : new ArrayList<>(activeExplosives)) {
+                    int radius = explosive.getRadius();
+                    int xpos = explosive.getXPos();
+                    int ypos = explosive.getYPos();
+                    for (int y = ypos - radius; y <= ypos + radius; y++) {
+                        for (int x = xpos - radius; x <= xpos + radius; x++) {
+                            if (y >= 0 && y < map.length && x >= 0 && x < map[0].length) {
+                                if (Math.sqrt(Math.pow(x - xpos, 2) + Math.pow(y - ypos, 2)) <= radius) {
+                                    if (map[y][x] != 5 && map[y][x] != 6 && map[y][x] != 7) {
+                                        map[y][x] = 23;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    activeExplosives.remove(explosive); // Remove the explosive after detonation
                 }
                 List<mob> mobListCopy = new ArrayList<>(mobList);
                 for (mob guy : mobListCopy) {
@@ -433,7 +480,8 @@ public class PrimaryController {
                         break;
                     case 7:
                         map[row][col] = 22;
-                        Explosive bomb = new Explosive("bomb", 100, 5);
+                        Explosive bomb = new Explosive("bomb", 100, 2, col, row);
+                        activeExplosives.add(bomb);
                         break;
                     case 8:
                         map[row][col] = 0;
@@ -625,13 +673,78 @@ public class PrimaryController {
      * Renders the visible portion of the map on the canvas based on the camera position.
      * This method is called whenever the map needs to be redrawn, such as after movement or spawning entities.
      * NPCs and mobs are rendered as overlays on top of the base tile.
+     * Adds swirling wind and falling leaves overlay effect.
      */
+    private static final int WIND_PARTICLE_COUNT = 20;
+    private static final int LEAF_PARTICLE_COUNT = 30;
+    private final List<WindParticle> windParticles = new ArrayList<>();
+    private final List<LeafParticle> leafParticles = new ArrayList<>();
+    private boolean overlayInitialized = false;
+    private static class LeafParticle {
+        double x, y, vy, vx, angle, angularVelocity, width, height;
+        javafx.scene.paint.Color color;
+        Random r = new Random();
+
+        LeafParticle(double canvasWidth, double canvasHeight) {
+            x = r.nextDouble() * canvasWidth;
+            y = r.nextDouble() * canvasHeight;
+            vx = 0.5 + r.nextDouble() * 3; // Increased vx for faster rightward movement
+            vy = 0.2 + r.nextDouble() * 0.4; // Increased vy for faster downward movement
+            angle = r.nextDouble() * 360;
+            angularVelocity = -1.0 + r.nextDouble() * 2; // Faster rotation
+            width = 8 + r.nextDouble() * 4;
+            height = 3 + r.nextDouble() * 2;
+            javafx.scene.paint.Color[] colors = {
+                javafx.scene.paint.Color.web("#2e8b57"),
+                javafx.scene.paint.Color.web("#228b22"),
+                javafx.scene.paint.Color.web("#006400"),
+                javafx.scene.paint.Color.web("#3cb371"),
+                javafx.scene.paint.Color.web("#66cdaa")
+            };
+            color = colors[r.nextInt(colors.length)];
+        }
+
+        void update(double canvasWidth, double canvasHeight) {
+            x += vx + Math.sin(angle * Math.PI / 180) * 0.05;
+            y += vy;
+            angle += angularVelocity;
+            if (y > canvasHeight) {
+                y = 0;
+                x = r.nextDouble() * canvasWidth;
+            }
+            if (x > canvasWidth) x = 0;
+            if (x < 0) x = canvasWidth;
+        }
+    }
+
+    private static class WindParticle {
+        double x, y, vx, vy, phase;
+
+        WindParticle(double width, double height) {
+            Random r = new Random();
+            x = r.nextDouble() * width;
+            y = r.nextDouble() * height;
+            vx = 0.5 + r.nextDouble() * 1.5;
+            vy = -0.5 + r.nextDouble();
+            phase = r.nextDouble() * Math.PI * 2;
+        }
+
+        void update(double width, double height) {
+            x += vx + Math.sin(phase) * 0.5;
+            y += vy + Math.cos(phase) * 0.5;
+            phase += 0.05;
+            if (x > width) x = 0;
+            if (y > height) y = 0;
+            if (x < 0) x = width;
+            if (y < 0) y = height;
+        }
+    }
+
     private void renderMap() {
         Platform.runLater(() -> {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-            // Draw base tiles
             for (int row = 0; row < TILES_TO_RENDER; row++) {
                 for (int col = 0; col < TILES_TO_RENDER; col++) {
                     int mapRow = (int)(cameraY + row);
@@ -706,6 +819,12 @@ public class PrimaryController {
                         case 22:
                             image = explosiveImage;
                             break;
+                        case 23:
+                            image = flameImage;
+                            break;
+                        case 24:
+                            image = burntGrassImage;
+                            break;
                         default:
                             image = grassImg;
                             break;
@@ -720,6 +839,42 @@ public class PrimaryController {
                         gc.drawImage(image, drawX, drawY, TILE_SIZE, TILE_SIZE);
                     }
                 }
+            }
+
+            // --- Swirling wind and falling leaves overlay effect ---
+            if (!overlayInitialized) {
+                windParticles.clear();
+                for (int i = 0; i < WIND_PARTICLE_COUNT; i++) {
+                    windParticles.add(new WindParticle(canvas.getWidth(), canvas.getHeight()));
+                }
+                leafParticles.clear();
+                for (int i = 0; i < LEAF_PARTICLE_COUNT; i++) {
+                    leafParticles.add(new LeafParticle(canvas.getWidth(), canvas.getHeight()));
+                }
+                overlayInitialized = true;
+            }
+
+            // Animate and draw wind particles (white swirling lines)
+            gc.save();
+            gc.setGlobalAlpha(0.25);
+            gc.setStroke(javafx.scene.paint.Color.WHITE);
+            gc.setLineWidth(2.0);
+            for (WindParticle p : windParticles) {
+                p.update(canvas.getWidth(), canvas.getHeight());
+                gc.strokeOval(p.x, p.y, 18 + 8 * Math.sin(p.phase), 8 + 4 * Math.cos(p.phase));
+            }
+            gc.restore();
+
+            // Animate and draw falling leaves (brown/orange/yellow ellipses)
+            for (LeafParticle leaf : leafParticles) {
+                leaf.update(canvas.getWidth(), canvas.getHeight());
+                gc.save();
+                gc.setGlobalAlpha(0.7);
+                gc.setFill(leaf.color);
+                gc.translate(leaf.x, leaf.y);
+                gc.rotate(leaf.angle);
+                gc.fillOval(-leaf.width/2, -leaf.height/2, leaf.width, leaf.height);
+                gc.restore();
             }
 
             long currentTime = System.currentTimeMillis();
