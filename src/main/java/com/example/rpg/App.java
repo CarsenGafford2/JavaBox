@@ -27,7 +27,7 @@ public class App extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws IOException {
-        primaryScene = new Scene(loadFXML("primary"), 500, 500);
+        primaryScene = new Scene(loadFXML("primary"), 700, 500);
         primaryStage.setScene(primaryScene);
         primaryStage.requestFocus();
         primaryStage.setResizable(true);
