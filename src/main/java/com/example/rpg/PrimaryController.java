@@ -15,8 +15,10 @@ import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import java.awt.Color;
@@ -154,6 +156,11 @@ public class PrimaryController {
     private ArrayList<String> names = new ArrayList<>();
     private ArrayList<Explosive> activeExplosives = new ArrayList<>();
 
+    @FXML private Button button1;
+    @FXML private Button button2;
+    @FXML private Button button3;
+    @FXML private Button button4;
+
     /**
      * Initializes the game, generates the map, loads names, spawns NPCs and mobs, and sets up rendering and input handling.
      * This method is called automatically after the FXML elements have been loaded.
@@ -165,6 +172,36 @@ public class PrimaryController {
         Class.forName("com.example.rpg.mobScripts.cow");
         Class.forName("com.example.rpg.mobScripts.sheep");
         Class.forName("com.example.rpg.mobScripts.pig");
+
+        button1.setGraphic(new ImageView(new Image(getClass().getResource("/com/example/rpg/res/textures/grass.png").toExternalForm())) {{
+            setFitWidth(50);
+            setFitHeight(50);
+        }});
+        button1.setOnMouseClicked((MouseEvent event) -> {
+            numberKeypressed = 0;
+        });
+        button2.setGraphic(new ImageView(new Image(getClass().getResource("/com/example/rpg/res/textures/sand.png").toExternalForm())) {{
+            setFitWidth(50);
+            setFitHeight(50);
+        }});
+        button2.setOnMouseClicked((MouseEvent event) -> {
+            numberKeypressed = 6;
+        });
+        button3.setGraphic(new ImageView(new Image(getClass().getResource("/com/example/rpg/res/textures/rock.png").toExternalForm())) {{
+            setFitWidth(50);
+            setFitHeight(50);
+        }});
+        button3.setOnMouseClicked((MouseEvent event) -> {
+            numberKeypressed = 1;
+        });
+        button4.setGraphic(new ImageView(new Image(getClass().getResource("/com/example/rpg/res/textures/tree.png").toExternalForm())) {{
+            setFitWidth(50);
+            setFitHeight(50);
+        }});
+        button4.setOnMouseClicked((MouseEvent event) -> {
+            numberKeypressed = 3;
+        });
+
 
         // Clear console
         System.out.print("\033[H\033[2J");
@@ -249,7 +286,6 @@ public class PrimaryController {
                 for (Npc guy : new ArrayList<>(npcList)) {
                     guy.setLastXPos(guy.getxPos());
                     guy.setLastYPos(guy.getyPos());
-                    map[guy.getyPos()][guy.getxPos()] = 0;
                     guy.move();
                     drawNpc(guy);
                 }
@@ -300,17 +336,12 @@ public class PrimaryController {
                     int mobX = guy.getxPos();
                     guy.setLastXPos(mobX);
                     guy.setLastYPos(mobY);
-                    if (mobY >= 0 && mobY < map.length && mobX >= 0 && mobX < map[0].length) {
-                        map[mobY][mobX] = 0;
                         if (guy.isHunted()) {
                             mobList.remove(guy);
                         } else {
                             guy.move();
                             drawMob(guy);
                         }
-                    } else {
-                        System.err.println("Error: Mob position out of bounds: (" + mobY + ", " + mobX + ")");
-                    }
                 }
             }
         }, 0, 500);
@@ -456,37 +487,7 @@ public class PrimaryController {
 
                 if (row < 0 || col < 0 || row >= map.length || col >= map[0].length) return;
 
-                switch (numberKeypressed) {
-                    case 0:
-                        spawnNpc(row, col);
-                        break;
-                    case 1:
-                        spawnMob(row, col);
-                        break;
-                    case 2:
-                        map[row][col] = 1;
-                        break;
-                    case 3:
-                        map[row][col] = 3;
-                        break;
-                    case 4:
-                        map[row][col] = 5;
-                        break;
-                    case 5:
-                        map[row][col] = 6;
-                        break;
-                    case 6:
-                        map[row][col] = 7;
-                        break;
-                    case 7:
-                        map[row][col] = 22;
-                        Explosive bomb = new Explosive("bomb", 100, 2, col, row);
-                        activeExplosives.add(bomb);
-                        break;
-                    case 8:
-                        map[row][col] = 0;
-                        break;
-                }
+                map[row][col] = numberKeypressed;
             });
         }
 
