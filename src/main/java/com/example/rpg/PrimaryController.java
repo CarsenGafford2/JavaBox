@@ -21,6 +21,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
@@ -98,7 +100,7 @@ public class PrimaryController {
     private String explosive = checkForModTexture("mods/textures/explosive.png", "res/textures/explosive.png");
     private String flame = checkForModTexture("mods/textures/flame.png", "res/textures/flame.png");
     private String burntGrass = checkForModTexture("mods/textures/burntGrass.png", "res/textures/burntGrass.png");
-
+    private String burntTree = checkForModTexture("mods/textures/burntTree.png", "res/textures/burntTree.png");
 
     /**
      * Checks for a modded texture first, if not found, defaults to the built-in texture.
@@ -123,11 +125,8 @@ public class PrimaryController {
     /*
      * Image objects for each texture, loaded from the paths defined above. (could also be re-worked to be more efficient)
      */
-    private Image[] imageArray = new Image[23];
-    int in = 0;
+    private Image[] imageArray = new Image[24];
     private Image grassImg = new Image(grass);
-    imageArray[in] = grassImg;
-    in++;
     private Image rockImg = new Image(rock);
     private Image treeImage = new Image(tree);
     private Image waterImage = new Image(water);
@@ -150,6 +149,7 @@ public class PrimaryController {
     private Image explosiveImage = new Image(explosive);
     private Image flameImage = new Image(flame);
     private Image burntGrassImage = new Image(burntGrass);
+    private Image burntTreeImage = new Image(burntTree);
 
     /*
      * Lists for managing NPCs, mobs, and names.
@@ -160,10 +160,7 @@ public class PrimaryController {
     private ArrayList<String> names = new ArrayList<>();
     private ArrayList<Explosive> activeExplosives = new ArrayList<>();
 
-    @FXML private Button button1;
-    @FXML private Button button2;
-    @FXML private Button button3;
-    @FXML private Button button4;
+    @FXML private AnchorPane tilePane;
 
     /**
      * Initializes the game, generates the map, loads names, spawns NPCs and mobs, and sets up rendering and input handling.
@@ -171,40 +168,92 @@ public class PrimaryController {
      * @throws ClassNotFoundException
      */
     public void initialize() throws ClassNotFoundException {
+    
+        int in = 0;
+        imageArray[in] = grassImg;
+        in++;
+        imageArray[in] = rockImg;
+        in++;
+        imageArray[in] = treeImage;
+        in++;
+        imageArray[in] = waterImage;
+        in++;
+        imageArray[in] = sandImage;
+        in++;
+        imageArray[in] = brickImage;
+        in++;
+        imageArray[in] = woodImage;
+        in++;
+        imageArray[in] = bedTopImage;
+        in++;
+        imageArray[in] = bedBottomImage;
+        in++;
+        imageArray[in] = nightstandImage;
+        in++;
+        imageArray[in] = doorImage;
+        in++;
+        imageArray[in] = chairImage;
+        in++;
+        imageArray[in] = tableBleftImage;
+        in++;
+        imageArray[in] = tableBrightImage;
+        in++;
+        imageArray[in] = tableTrightImage;
+        in++;
+        imageArray[in] = tableTleftImage;
+        in++;
+        imageArray[in] = shelterBleftImage;
+        in++;
+        imageArray[in] = shelterBrightImage;
+        in++;
+        imageArray[in] = shelterTrightImage;
+        in++;
+        imageArray[in] = shelterTleftImage;
+        in++;
+        imageArray[in] = explosiveImage;
+        in++;
+        imageArray[in] = flameImage;
+        in++;
+        imageArray[in] = burntGrassImage;
+        in++;
+        imageArray[in] = burntTreeImage;
+        in++;
+
+        int buttonSize = 50;
+        int padding = 0;
+        int columns = 4;
+
+        for (int i = 0; i < imageArray.length; i++) {
+            ImageView imageView = new ImageView(imageArray[i]);
+            imageView.setFitWidth(buttonSize);
+            imageView.setFitHeight(buttonSize);
+            imageView.setPreserveRatio(true);
+
+            Button btn = new Button();
+            btn.setGraphic(imageView);
+            btn.setPrefSize(buttonSize, buttonSize);
+            btn.setMinSize(buttonSize, buttonSize);
+            btn.setMaxSize(buttonSize, buttonSize);
+
+            int row = i / columns;
+            int col = i % columns;
+
+            btn.setLayoutX(col * (buttonSize + padding));
+            btn.setLayoutY(row * (buttonSize + padding));
+
+                final int index = i + 2;
+
+                btn.setOnAction(event -> {
+                    numberKeypressed = index;
+                });
+
+            tilePane.getChildren().add(btn);
+        }
 
         Class.forName("com.example.rpg.mobScripts.chicken");
         Class.forName("com.example.rpg.mobScripts.cow");
         Class.forName("com.example.rpg.mobScripts.sheep");
         Class.forName("com.example.rpg.mobScripts.pig");
-
-        button1.setGraphic(new ImageView(new Image(getClass().getResource("/com/example/rpg/res/textures/grass.png").toExternalForm())) {{
-            setFitWidth(50);
-            setFitHeight(50);
-        }});
-        button1.setOnMouseClicked((MouseEvent event) -> {
-            numberKeypressed = 0;
-        });
-        button2.setGraphic(new ImageView(new Image(getClass().getResource("/com/example/rpg/res/textures/sand.png").toExternalForm())) {{
-            setFitWidth(50);
-            setFitHeight(50);
-        }});
-        button2.setOnMouseClicked((MouseEvent event) -> {
-            numberKeypressed = 6;
-        });
-        button3.setGraphic(new ImageView(new Image(getClass().getResource("/com/example/rpg/res/textures/rock.png").toExternalForm())) {{
-            setFitWidth(50);
-            setFitHeight(50);
-        }});
-        button3.setOnMouseClicked((MouseEvent event) -> {
-            numberKeypressed = 1;
-        });
-        button4.setGraphic(new ImageView(new Image(getClass().getResource("/com/example/rpg/res/textures/tree.png").toExternalForm())) {{
-            setFitWidth(50);
-            setFitHeight(50);
-        }});
-        button4.setOnMouseClicked((MouseEvent event) -> {
-            numberKeypressed = 3;
-        });
 
 
         // Clear console
@@ -298,7 +347,7 @@ public class PrimaryController {
                 for (int i = 0; i < map.length; i++) {
                     for (int j = 0; j < map[i].length; j++) {
                         if (map[i][j] == 23) {
-                            map[i][j] = 24;
+                            map[i][j] = 25;
                             if (i + 1 < map.length && map[i + 1][j] == 3 && rand.nextDouble() < spreadChance) {
                                 newFlames.add(new int[]{i + 1, j});
                             }
@@ -491,7 +540,13 @@ public class PrimaryController {
 
                 if (row < 0 || col < 0 || row >= map.length || col >= map[0].length) return;
 
-                map[row][col] = numberKeypressed;
+                if (numberKeypressed == 22) {
+                    map[row][col] = 22;
+                    Explosive bomb = new Explosive("Bomb", 100, 4, col, row);
+                    activeExplosives.add(bomb);
+                } else {
+                    map[row][col] = numberKeypressed;
+                }
             });
         }
 
@@ -829,6 +884,9 @@ public class PrimaryController {
                             break;
                         case 24:
                             image = burntGrassImage;
+                            break;
+                        case 25:
+                            image = burntTreeImage;
                             break;
                         default:
                             image = grassImg;
