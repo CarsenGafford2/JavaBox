@@ -123,7 +123,11 @@ public class PrimaryController {
     /*
      * Image objects for each texture, loaded from the paths defined above. (could also be re-worked to be more efficient)
      */
+    private Image[] imageArray = new Image[23];
+    int in = 0;
     private Image grassImg = new Image(grass);
+    imageArray[in] = grassImg;
+    in++;
     private Image rockImg = new Image(rock);
     private Image treeImage = new Image(tree);
     private Image waterImage = new Image(water);
