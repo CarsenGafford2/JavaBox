@@ -6,6 +6,8 @@ import javafx.scene.input.ScrollEvent;
 
 /**
  * Handles all keyboard and mouse input for the game.
+ * @author Carsen Gafford
+ * @version alpha v0.2.0
  */
 public class InputHandler {
     
@@ -105,7 +107,7 @@ public class InputHandler {
      * @param deltaTime The time since the last update in seconds.
      */
     public void updateCamera(double deltaTime) {
-        double speed = moveSpeed * deltaTime * 60; // scale to 60 FPS
+        double speed = moveSpeed * deltaTime * 60;
 
         if (upPressed) {
             cameraY = Math.max(0, cameraY - speed);
@@ -121,7 +123,6 @@ public class InputHandler {
         }
     }
 
-    // Getters
     public double getMoveSpeed() { return moveSpeed; }
     public boolean isUpPressed() { return upPressed; }
     public boolean isDownPressed() { return downPressed; }
