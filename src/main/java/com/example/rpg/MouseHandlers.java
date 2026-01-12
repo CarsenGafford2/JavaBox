@@ -9,18 +9,15 @@ import java.util.List;
 
 /**
  * Handles all mouse interaction on the game canvas.
+ * @author Carsen Gafford
+ * @version alpha v0.2.0
  */
 public final class MouseHandlers {
 
     private static Tooltip currentTooltip;
 
-    private MouseHandlers() {
-        // Utility class
-    }
+    private MouseHandlers() {}
 
-    /**
-     * Attaches click and hover handlers to the canvas.
-     */
     public static void attach(
             Canvas canvas,
             int[][] map,
@@ -32,16 +29,7 @@ public final class MouseHandlers {
         attachHoverHandler(canvas, map, entityManager, inputHandler);
     }
 
-    /* =========================
-       Click Handling
-       ========================= */
-
-    private static void attachClickHandler(
-            Canvas canvas,
-            int[][] map,
-            InputHandler inputHandler,
-            List<Explosive> activeExplosives
-    ) {
+    private static void attachClickHandler(Canvas canvas, int[][] map, InputHandler inputHandler, List<Explosive> activeExplosives) {
         canvas.setOnMouseClicked(event -> {
 
             int col = (int) (event.getX() / inputHandler.getTileSize()
@@ -66,10 +54,6 @@ public final class MouseHandlers {
             }
         });
     }
-
-    /* =========================
-       Hover Handling
-       ========================= */
 
     private static void attachHoverHandler(
             Canvas canvas,
@@ -117,15 +101,7 @@ public final class MouseHandlers {
         hideTooltip(canvas);
     }
 
-    /* =========================
-       Tooltip Helpers
-       ========================= */
-
-    private static void showTooltip(
-            Canvas canvas,
-            String text,
-            MouseEvent event
-    ) {
+    private static void showTooltip(Canvas canvas, String text, MouseEvent event) {
         if (currentTooltip == null) {
             currentTooltip = new Tooltip();
             Tooltip.install(canvas, currentTooltip);
