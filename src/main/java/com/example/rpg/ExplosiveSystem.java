@@ -2,6 +2,11 @@ package com.example.rpg;
 
 import java.util.*;
 
+/**
+ * Handles the logic for explosives in the RPG game.
+ * @author Carsen Gafford
+ * @version alpha v0.2.0
+ */
 public class ExplosiveSystem {
 
     private final int[][] map;
