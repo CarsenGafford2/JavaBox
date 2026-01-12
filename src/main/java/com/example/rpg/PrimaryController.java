@@ -21,16 +21,8 @@ import java.util.*;
  */
 public class PrimaryController {
 
-    /* =========================
-       FXML
-       ========================= */
-
     @FXML private Canvas canvas;
     @FXML private AnchorPane tilePane;
-
-    /* =========================
-       Core Systems
-       ========================= */
 
     private TextureManager textureManager;
     private ParticleSystem particleSystem;
@@ -42,10 +34,6 @@ public class PrimaryController {
     private ExplosiveSystem explosiveSystem;
     private GameLoop gameLoop;
 
-    /* =========================
-       World State
-       ========================= */
-
     private int[][] map;
 
     private final int mapWidth = 500;
@@ -56,40 +44,29 @@ public class PrimaryController {
 
     private static final Random rand = new Random();
 
-    /* =========================
-       Initialization
-       ========================= */
-
     @FXML
     public void initialize() throws ClassNotFoundException {
 
         clearConsole();
 
-        /* ---- Load Assets ---- */
         textureManager = new TextureManager();
         particleSystem = new ParticleSystem();
 
-        /* ---- Generate Map ---- */
         map = MapGenerator.generateMap(mapWidth, mapHeight);
         MapImageExporter.export(map, "map.png");
 
-        /* ---- Managers ---- */
         entityManager = new EntityManager(map);
         inputHandler = new InputHandler(mapWidth, mapHeight);
         gameRenderer = new GameRenderer(canvas, map, textureManager, particleSystem);
 
-        /* ---- Systems ---- */
         fireSystem = new FireSystem(map);
         explosiveSystem = new ExplosiveSystem(map, activeExplosives);
         gameLoop = new GameLoop(entityManager, gameRenderer, fireSystem, explosiveSystem);
 
-        /* ---- UI ---- */
         TileButtonController.setup(tilePane, textureManager, inputHandler);
 
-        /* ---- Input ---- */
         InputSetup.attach(canvas, inputHandler, gameRenderer);
 
-        /* ---- Mouse ---- */
         MouseHandlers.attach(
                 canvas,
                 map,
@@ -98,13 +75,10 @@ public class PrimaryController {
                 activeExplosives
         );
 
-        /* ---- Names ---- */
         loadNames();
 
-        /* ---- Mobs ---- */
         spawnInitialMobs();
 
-        /* ---- Start Loops ---- */
         gameLoop.startNpcTimer();
         gameLoop.startRenderLoop();
         gameLoop.startCameraLoop(inputHandler, gameRenderer);
@@ -112,10 +86,6 @@ public class PrimaryController {
         canvas.setFocusTraversable(true);
         canvas.requestFocus();
     }
-
-    /* =========================
-       Helpers
-       ========================= */
 
     private void loadNames() {
         try {
