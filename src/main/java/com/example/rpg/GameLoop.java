@@ -3,6 +3,11 @@ package com.example.rpg;
 import java.util.*;
 import javafx.animation.AnimationTimer;
 
+/**
+ * Main game loop handling NPC updates, rendering, and camera movement.
+ * @author Carsen Gafford
+ * @version alpha v0.2.0
+ */
 public class GameLoop {
 
     private final EntityManager entityManager;
@@ -10,10 +15,7 @@ public class GameLoop {
     private final FireSystem fireSystem;
     private final ExplosiveSystem explosiveSystem;
 
-    public GameLoop(EntityManager entityManager,
-                    GameRenderer renderer,
-                    FireSystem fireSystem,
-                    ExplosiveSystem explosiveSystem) {
+    public GameLoop(EntityManager entityManager, GameRenderer renderer, FireSystem fireSystem, ExplosiveSystem explosiveSystem) {
         this.entityManager = entityManager;
         this.renderer = renderer;
         this.fireSystem = fireSystem;
