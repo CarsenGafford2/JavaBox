@@ -5,10 +5,11 @@ import javafx.scene.image.Image;
 /**
  * Manages texture loading and caching for the game.
  * Handles modded textures and falls back to default textures.
+ * @author Carsen Gafford
+ * @version alpha v0.2.0
  */
 public class TextureManager {
     
-    // Texture paths
     private String grass;
     private String rock;
     private String tree;
@@ -34,7 +35,6 @@ public class TextureManager {
     private String burntGrass;
     private String burntTree;
 
-    // Image objects
     private Image grassImg;
     private Image rockImg;
     private Image treeImage;
@@ -182,7 +182,6 @@ public class TextureManager {
         }
     }
 
-    // Getters for all images
     public Image getGrassImg() { return grassImg; }
     public Image getRockImg() { return rockImg; }
     public Image getTreeImage() { return treeImage; }
