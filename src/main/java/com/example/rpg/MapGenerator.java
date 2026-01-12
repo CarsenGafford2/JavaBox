@@ -4,6 +4,8 @@ import java.util.Random;
 
 /**
  * Generates procedural game maps using OpenSimplex2S noise.
+ * @author Carsen Gafford
+ * @version alpha v0.2.0
  */
 public class MapGenerator {
     
@@ -26,22 +28,21 @@ public class MapGenerator {
             for (int x = 0; x < width; x++) {
                 double value = OpenSimplex2S.noise2(seed, x * 0.05, y * 0.05);
                 
-                //reference codex doc for better labeled values
                 if (value < -0.6) {
-                    generatedMap[y][x] = 5; // Water (5)
+                    generatedMap[y][x] = 5;
                 } else if (value < -0.5) {
-                    generatedMap[y][x] = 6; // Sand (6)
+                    generatedMap[y][x] = 6;
                 } else if (value < 0.1) {
-                    generatedMap[y][x] = 0; // Tree (3)
+                    generatedMap[y][x] = 0;
                 } else {
-                    generatedMap[y][x] = 3; // Grass (0)
+                    generatedMap[y][x] = 3;
                 }
             }
             for (int i = 0; i < 35; i++) {
                 int x = rand.nextInt(width);
                 int b = rand.nextInt(height);
                 if (generatedMap[b][x] == 0) {
-                    generatedMap[b][x] = 1; // Rock (1)
+                    generatedMap[b][x] = 1;
                 }
             }
         }
