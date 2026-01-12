@@ -1,5 +1,10 @@
 package com.example.rpg;
 
+/**
+ * Represents an explosive entity in the RPG game.
+ * @author Carsen Gafford
+ * @version alpha v0.2.0
+ */
 public class Explosive {
     
 
