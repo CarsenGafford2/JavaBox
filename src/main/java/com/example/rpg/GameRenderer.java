@@ -7,6 +7,9 @@ import javafx.scene.image.Image;
 
 /**
  * Handles all game rendering logic.
+ * Renders the map, NPCs, mobs, and particle effects.
+ * @author Carsen Gafford
+ * @version alpha v0.2.0
  */
 public class GameRenderer {
     
@@ -46,7 +49,6 @@ public class GameRenderer {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-            // Render base tiles
             for (int row = 0; row < tilesToRender; row++) {
                 for (int col = 0; col < tilesToRender; col++) {
                     int mapRow = (int)(cameraY + row);
@@ -69,11 +71,9 @@ public class GameRenderer {
                 }
             }
 
-            // Render particle effects
             particleSystem.initialize(canvas.getWidth(), canvas.getHeight());
             particleSystem.renderParticles(gc, canvas.getWidth(), canvas.getHeight());
 
-            // Render NPCs and mobs with interpolation
             long currentTime = System.currentTimeMillis();
             long timeSinceUpdate = currentTime - npcUpdateTime;
             double alpha = Math.min(1.0, (double) timeSinceUpdate / 500.0);
@@ -151,7 +151,6 @@ public class GameRenderer {
         }
     }
 
-    // Getters and setters
     public void setMap(int[][] map) { this.map = map; }
     public void setCameraX(double x) { this.cameraX = x; }
     public void setCameraY(double y) { this.cameraY = y; }
