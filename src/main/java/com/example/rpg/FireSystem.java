@@ -2,6 +2,11 @@ package com.example.rpg;
 
 import java.util.*;
 
+/**
+ * Handles the logic for fire spreading in the RPG game.
+ * @author Carsen Gafford
+ * @version alpha v0.2.0
+ */
 public class FireSystem {
 
     private final int[][] map;
