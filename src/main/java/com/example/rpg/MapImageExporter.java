@@ -6,6 +6,11 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
+/**
+ * Exports a 2D map array as an image file.
+ * @author Carsen Gafford
+ * @version alpha v0.2.0
+ */
 public class MapImageExporter {
 
     public static void export(int[][] map, String filename) {
