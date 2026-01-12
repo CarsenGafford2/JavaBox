@@ -2,7 +2,6 @@ package com.example.rpg;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
 /**
@@ -17,7 +16,6 @@ public class InputHandler {
     private int tilesToRender = 11;
     private int mapWidth;
     private int mapHeight;
-    private int[][] map;
     private double cameraX = 0;
     private double cameraY = 0;
 
@@ -25,12 +23,10 @@ public class InputHandler {
      * Constructs an InputHandler with map dimensions.
      * @param mapWidth The width of the map.
      * @param mapHeight The height of the map.
-     * @param map The map array.
      */
-    public InputHandler(int mapWidth, int mapHeight, int[][] map) {
+    public InputHandler(int mapWidth, int mapHeight) {
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
-        this.map = map;
     }
 
     /**

@@ -4,8 +4,6 @@ import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Handles all game rendering logic.
