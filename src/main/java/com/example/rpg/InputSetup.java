@@ -5,12 +5,12 @@ import javafx.scene.canvas.Canvas;
 
 /**
  * Wires keyboard and mouse input to the InputHandler and GameRenderer.
+ * @author Carsen Gafford
+ * @version alpha v0.2.0
  */
 public final class InputSetup {
 
-    private InputSetup() {
-        // Utility class – no instances
-    }
+    private InputSetup() {}
 
     /**
      * Attaches keyboard and scroll handlers to the canvas scene.
@@ -40,7 +40,6 @@ public final class InputSetup {
         scene.setOnKeyPressed(event -> {
             inputHandler.handleKeyPressed(event);
 
-            // Update renderer on zoom / tile changes
             renderer.setTileSize(inputHandler.getTileSize());
             renderer.setTilesToRender(inputHandler.getTilesToRender());
         });
