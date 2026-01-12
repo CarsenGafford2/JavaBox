@@ -6,12 +6,12 @@ import javafx.scene.layout.AnchorPane;
 
 /**
  * Handles creation and layout of tile selection buttons.
+ * @author Carsen Gafford
+ * @version alpha v0.2.0
  */
 public final class TileButtonController {
 
-    private TileButtonController() {
-        // Utility class – no instances
-    }
+    private TileButtonController() {}
 
     /**
      * Builds tile buttons and attaches them to the provided AnchorPane.
@@ -50,7 +50,6 @@ public final class TileButtonController {
             btn.setLayoutX(col * (buttonSize + padding));
             btn.setLayoutY(row * (buttonSize + padding));
 
-            // Tile IDs start at 2 in your original code
             final int tileIndex = i + 2;
 
             btn.setOnAction(e ->
