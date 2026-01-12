@@ -6,6 +6,9 @@ import java.util.Random;
 /**
  * Manages all game entities including NPCs and mobs.
  * Handles spawning, updating, drawing, and tracking of all entities.
+ * 
+ * @author Carsen Gafford
+ * @version alpha v0.2.0
  */
 public class EntityManager {
 
@@ -18,10 +21,6 @@ public class EntityManager {
     public EntityManager(int[][] map) {
         this.map = map;
     }
-
-    /* =========================
-       NPCs
-       ========================= */
 
     public void spawnNpc(int x, int y, ArrayList<String> names) {
         if (names.isEmpty()) {
@@ -54,10 +53,6 @@ public class EntityManager {
     public ArrayList<Npc> getNpcList() {
         return npcList;
     }
-
-    /* =========================
-       Mobs
-       ========================= */
 
     public void spawnMob(int x, int y) {
         mob randomMob = mob.createRandomMob();
@@ -94,10 +89,6 @@ public class EntityManager {
     public ArrayList<mob> getMobList() {
         return mobList;
     }
-
-    /* =========================
-       Map
-       ========================= */
 
     public void setMap(int[][] newMap) {
         this.map = newMap;
